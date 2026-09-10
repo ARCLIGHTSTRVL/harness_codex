@@ -91,18 +91,21 @@ the parent agent, which remains responsible for source inspection, integration, 
 ## A unit in practice
 
 The path is iterative rather than a mandatory phase count. The agent writes durable artifacts as needed.
+Scope includes acceptance criteria; findings include evidence and decisions. Documentation
+updates go to `wiki/` or `knowledge/`, and unfinished work leaves a `NEXT.md` or plan handoff.
+When a later session resumes, it rechecks saved state against the current source.
 
 ```mermaid
 flowchart TD
-    R[Request] --> S[Scope and acceptance]
-    S --> D[Inspect source and design]
+    R[Request] --> S[Define scope]
+    S --> D[Inspect and design]
     D --> I[Implement]
     I --> V[Verify]
-    V -->|Changes needed| I
-    V -->|Accepted| E[Record evidence and decisions]
-    E --> A[Update wiki mechanics or knowledge rationale]
-    A --> H[Close unit or save NEXT / plan handoff]
-    H -. Later session: recheck saved state .-> D
+    V -->|Revise| I
+    V -->|Pass| E[Record findings]
+    E --> A[Update docs]
+    A --> H[Close or handoff]
+    H -. Resume .-> D
 ```
 
 ## What the harness includes
