@@ -25,3 +25,5 @@
 ## [2026-09-11] refresh | Checked update, shared-runtime, source-recovery and saved-interpreter contracts against the frozen working tree and its 68-test acceptance. Kept the new contracts explicitly uncommitted and retained macOS/host-delivery limitations in docs/PACKAGING.md.
 
 ## [2026-09-11] lint | Final wiki lint retained seven medium documentation-coverage advisories and no blocking finding. The contract index was refreshed; comprehensive page coverage remains separate maintenance work.
+
+## [2026-09-11] publish | Bound the maintenance contract section to published implementation 6e9235c after local/tracking/live-remote ref equality. No behavioral code changed during documentation closeout.

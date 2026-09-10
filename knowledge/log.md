@@ -33,3 +33,5 @@
 ## [2026-09-11] verify | Closed local maintenance remediation after 68 tests passed in 247.301 seconds with 101 unchanged code/test inputs. Consolidated runtime confinement, preserved-source recovery and interpreter-identity findings into maintenance-reliability. Actual macOS execution, publication and personal installation remain separate boundaries.
 
 ## [2026-09-11] lint | Final kb-lint passed with four content pages and zero issues; no unconsolidated maintenance deltas remain.
+
+## [2026-09-11] publish | User authorized publication followed by personal-harness adaptation. Pushed maintenance implementation 6e9235cb8ec1cef42d5ed8d2d484b224524339a1 and verified matching local HEAD, origin/main and live remote main. Community installation remains separate from the personal harness.

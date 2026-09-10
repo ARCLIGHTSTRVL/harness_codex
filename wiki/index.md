@@ -56,9 +56,9 @@ Decision rationale: knowledge/comparisons/public-source-connection.md.
 The Windows and macOS sync wrappers retain their existing pull/install behavior and
 configured tracking source. No remotes, account settings or installed-state schema change.
 
-## Maintenance reliability (UNCOMMITTED)
+## Maintenance reliability (6e9235c)
 
-These working-tree contracts supersede the affected historical entrypoint/recovery
+These contracts at 6e9235c supersede the affected historical entrypoint/recovery
 claims above. Local acceptance passed 68 tests on the frozen working tree; evidence
 and platform limits are in docs/PACKAGING.md. Decision context:
 knowledge/comparisons/maintenance-reliability.md.

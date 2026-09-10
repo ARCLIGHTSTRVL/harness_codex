@@ -27,14 +27,16 @@ any user-authorized managed delegation.
 
 ## Version 0.1.2 update
 
-### Maintenance reliability (2026-09-11, working tree)
+### Maintenance reliability (2026-09-11, implementation 6e9235c)
 
 The maintenance follow-up addresses four reproduced transitions: nested ZIP sync
 acting on an ancestor Git repository; updates failing to reuse the dependency runtime;
 in-place rollback restoring files but retaining newer hook source; and diagnostic
 Python selection causing false hook drift. Decision rationale and alternatives are
 in knowledge/comparisons/maintenance-reliability.md. Local acceptance is complete
-for the working tree based on a2efd0a; this does not claim publication.
+for the working tree based on a2efd0a. After explicit authorization, implementation
+6e9235cb8ec1cef42d5ed8d2d484b224524339a1 was pushed to public main; local HEAD,
+origin/main and live remote main matched. A documentation closeout may advance HEAD.
 
 The sync/bootstrap wrappers require an exact Git root and explicitly refuse status
 failures and untracked changes. They retain existing tracking configuration. Platform
@@ -89,8 +91,8 @@ verification compares packaged code/test bytes to that manifest and exercises th
 extracted Windows installer, setup-check and hook command probes in a disposable
 profile; its receipt is dist/review/integration/package-receipt.json. macOS SSH and
 Tailscale ping timed out, so this follow-up has no macOS host execution evidence.
-Git Bash coverage is not a substitute. Personal installation and remote publication
-remain separate from this local acceptance.
+Git Bash coverage is not a substitute. The separate publication readback above does
+not establish personal installation or native host delivery.
 
 ### Public source connection validation (2026-09-11)
 

@@ -141,7 +141,8 @@ conflicts, but concurrent filesystem mutation or I/O failure can interrupt a seq
 after some writes. Keep the journal and inspect named failures before retrying.
 No force-overwrite recovery is added.
 
-Local implementation acceptance is complete on the uncommitted tree based on a2efd0a.
+Local implementation acceptance completed on the tree based on a2efd0a, subsequently
+published as 6e9235cb8ec1cef42d5ed8d2d484b224524339a1 after explicit authorization.
 The final Windows suite passed 68 tests in 247.301 seconds, with all 101 pinned
 code/test inputs unchanged. This includes actual installer/bootstrap/sync execution,
 isolated dependency preparation, rollback and preservation regressions. Independent
@@ -153,5 +154,6 @@ The first integration run overlapped an existing test's source-selection correct
 its old loaded expectation failed. Freezing the test inputs and rerunning the entire
 suite produced the final evidence above. macOS SSH and direct Tailscale ping timed
 out, leaving actual macOS execution for the next platform-validation unit. Windows
-and Git Bash execution do not close that gap. Publication and personal installation
-are outside this unit; no remote or installed personal harness was changed.
+and Git Bash execution do not close that gap. The implementation's local HEAD,
+origin/main and live remote main matched after push. Personal installation remains
+separate; the community bundle was not applied over the installed personal harness.

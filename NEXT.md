@@ -1,5 +1,5 @@
 ---
-last_verified_commit: a2efd0a2517d4d0549a84e2b3208e7a9e5e30153
+last_verified_commit: 6e9235cb8ec1cef42d5ed8d2d484b224524339a1
 last_touched: 2026-09-11
 writer: codex
 unit_paths: scripts tests skills/dev-setup skills/sync skills/setup-check README.md START-HERE.md docs/PACKAGING.md
@@ -9,20 +9,20 @@ unit_paths: scripts tests skills/dev-setup skills/sync skills/setup-check README
 
 ## Active Unit
 
-None. The maintenance remediation unit is locally complete in the uncommitted tree.
+None. The maintenance implementation was published as 6e9235c on 2026-09-11.
+Local HEAD, origin/main and a live remote main readback matched at publication.
 Verified results and remaining limits are in docs/PACKAGING.md; decisions and rejected
 alternatives are in knowledge/comparisons/maintenance-reliability.md.
 
 ## Next Action
 
-Await a separately authorized publication or platform-validation unit. Preserve the
-current diff and excluded receipts under dist/review/integration. The retired working
-plan has been consolidated into the knowledge record.
+No active community change. Preserve excluded receipts under dist/review/integration.
+Personal-harness adaptation is a separate unit in its own source repository.
 
 ## Pending, Not This Unit
 
 - Actual macOS execution remains unverified because SSH/Tailscale probes timed out.
-- Commit/push and personal-profile installation were not part of this remediation.
+- The community implementation is published; it was not installed over the personal profile.
 - Existing community doctor native-routing STALE and wiki coverage advisories remain
   separate from this unit and the live session's FRESH launch attestation.
 - No open-source license has been selected.
