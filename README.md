@@ -62,6 +62,9 @@ The first onboarding command checks prerequisites and previews the target withou
 changing it. `--apply` performs the installation. If PyYAML is unavailable, onboarding
 creates a repository-local `.runtime` virtual environment; it does not modify global
 Python packages. No administrator or sudo access is required.
+Onboarding and both platform installers share runtime selection, including later sync
+and bootstrap calls. Status checks use the recorded installation interpreter for hook
+verification, even when launched by another Python.
 
 The installer targets the current user's `~/.codex`, or `CODEX_HOME` when set. It:
 
@@ -133,6 +136,9 @@ git rev-parse --abbrev-ref --symbolic-full-name '@{u}'
 
 Sync refuses a dirty working tree, pulls the current branch's configured tracking remote
 and branch with `--ff-only`, and applies the installer. It does not run setup-check.
+The source directory must itself be the Git root; extracting a ZIP inside another
+checkout does not make that ZIP updatable. After rollback, sync uses the state's
+`update_repo` checkout while status checks use its restored `source_repo`.
 If the checkout tracks a fork or another custom source, report that source and leave its
 remote unchanged; sync uses the configured tracking source. Run the shown setup check
 afterward to verify the local installed state. The normal check is offline and prints the
@@ -191,6 +197,10 @@ Use `mac` on macOS and add `--apply` only after reviewing the plan. Replace `rol
 with `uninstall` to restore the baseline before all recorded installs. Recovery refuses
 targets changed after installation. Edits made between upgrades can require rolling back
 one version at a time. There is no force-overwrite recovery mode.
+
+Rollback activates the prior preserved source for hook execution without resetting the
+working checkout. Keep the recorded Python runtime available; its binaries are not
+included in source recovery. The sync skill uses the retained update checkout afterward.
 
 Recovery snapshots remain local under `CODEX_HOME` and may contain original file bytes;
 do not publish them. See [START-HERE.md](START-HERE.md) for the full recovery boundary.

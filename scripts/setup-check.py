@@ -13,10 +13,12 @@ import sys
 import unicodedata
 from io import TextIOWrapper
 
+sys.dont_write_bytecode = True
 SCRIPT_REPO = Path(__file__).resolve().parent.parent
 if str(SCRIPT_REPO) not in sys.path:
     sys.path.insert(0, str(SCRIPT_REPO))
 from scripts.installer_support import is_source_junk
+from scripts.native_hook_io import HookRefusal, read_bytes
 
 START_MARKER = "<!-- DEV-SETUP-CODEX:START -->"
 END_MARKER = "<!-- DEV-SETUP-CODEX:END -->"
@@ -520,12 +522,29 @@ def native_hook_findings(home: Path, repo: Path, probe: bool = False) -> list[st
     return ["Drift: global native hooks are unverifiable; inspect native-hooks.py check."]
 
 
+def installed_source_repo(home):
+    state_path = codex_home(home) / "dev-setup-codex-community-state.json"
+    try:
+        raw = read_bytes(state_path)
+        if raw is None:
+            return SCRIPT_REPO, None
+        state = json.loads(raw)
+    except (HookRefusal, OSError, ValueError, UnicodeError) as exc:
+        return None, "installed state cannot be read: " + str(exc)
+    if not isinstance(state, dict) or state.get("distribution") != "community":
+        return None, "installed state is not a community baseline"
+    value = state.get("source_repo")
+    if not isinstance(value, str) or not Path(value).is_absolute():
+        return None, "installed state has invalid source_repo"
+    return Path(value), None
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=(__doc__ or "Codex install status").splitlines()[0])
     ap.add_argument("--home", type=Path, default=Path.home(),
                     help="profile root holding .codex/.ssh (tests)")
     ap.add_argument("--repo", type=Path, default=None,
-                    help="dev-setup clone (default: first existing candidate)")
+                    help="dev-setup source to compare (default: installed state source_repo)")
     ap.add_argument("--skip-hooks", action="store_true",
                     help="skip global native hook wiring checks; this does not verify hook trust")
     ap.add_argument("--probe-hooks", action="store_true",
@@ -600,8 +619,12 @@ def main(argv=None):
             return 2
         return 0
 
+    repo, source_error = (args.repo, None) if args.repo is not None else installed_source_repo(args.home)
+    if source_error:
+        print("Drift: " + source_error)
+        return 1
     from scripts.community import status
-    return status(sys.modules[__name__], args.home, args.repo or SCRIPT_REPO,
+    return status(sys.modules[__name__], args.home, repo,
                   hooks=not args.skip_hooks, probe=args.probe_hooks,
                   check_updates=args.check_updates)
 

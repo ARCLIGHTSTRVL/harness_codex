@@ -27,6 +27,71 @@ any user-authorized managed delegation.
 
 ## Version 0.1.2 update
 
+### Maintenance reliability (2026-09-11, working tree)
+
+The maintenance follow-up addresses four reproduced transitions: nested ZIP sync
+acting on an ancestor Git repository; updates failing to reuse the dependency runtime;
+in-place rollback restoring files but retaining newer hook source; and diagnostic
+Python selection causing false hook drift. Decision rationale and alternatives are
+in knowledge/comparisons/maintenance-reliability.md. Local acceptance is complete
+for the working tree based on a2efd0a; this does not claim publication.
+
+The sync/bootstrap wrappers require an exact Git root and explicitly refuse status
+failures and untracked changes. They retain existing tracking configuration. Platform
+installers and onboarding share the standard-library runtime selector; dependency
+installation stays in the private runtime and preview does not create it.
+Private pip execution disables pip config files and strips destination overrides;
+index/find-links and ordinary proxy environment settings remain usable. An index or
+proxy supplied only through pip config must be supplied through environment settings.
+
+Installation preserves complete allowlisted source under the recipient's CODEX_HOME.
+State schema 2 gains validated recovery_source, recovery_digest and python_executable
+fields. Normal source_repo is the update checkout. Rollback activates a preserved
+source_repo and retains the editable checkout as update_repo, without modifying Git.
+The recovery digest covers preserved source filenames and bytes; recognized Python
+caches generated for existing source files are excluded. Sourceless bytecode and
+unexpected source files remain invalid. The original source_digest remains the
+installed content contract. Interpreter binaries are not
+preserved, so the recorded interpreter must remain runnable.
+
+Status defaults to the installed execution source; explicit --repo still compares the
+specified source. Hook checks and command probes use the installed interpreter rather
+than the checker process's interpreter. A rollback snapshot has no Git history, so its
+public revision comparison is unknown. Hook trust and native host delivery remain
+outside these checks.
+
+Rollback validates source, runtime and recorded target bytes before restoration.
+Legacy state lacking a source snapshot is recoverable only while its previous source
+matches. Journal hash adjustments for retargeted hooks/state preserve mismatches from
+user edits between installations; they cannot turn those edits into removable output.
+Source snapshots, recovery journals and runtime evidence remain local after uninstall.
+The existing per-file restoration/concurrent-writer limitations below still apply.
+
+Validation on Windows Python 3.11: the final full suite passed all 68 tests in
+247.301 seconds. The 101 pinned code/test inputs were unchanged during that run.
+Coverage includes actual PowerShell install/bootstrap/sync with a no-PyYAML base,
+private offline-wheel installation with hostile pip destination settings, Git Bash
+and PowerShell repository boundaries, same-directory rollback followed by helper
+execution, legacy/corrupt-state forward repair, user-edit continuity, and a checker
+using a different interpreter. An independent recovery review also passed its 12
+focused tests and rechecked the reported fixes. Source lint and lifecycle skill
+validation passed. Knowledge lint reported four content pages and zero issues; wiki
+lint retained seven medium documentation-coverage advisories and no blocking finding.
+Raw receipts remain excluded under dist/review/integration.
+
+The first integration run overlapped a one-line update to the existing rollback
+test's source-selection expectation and failed that loaded old test. Product code
+was unchanged; the final run above used the frozen test and passed. Its log and
+input manifest, rather than the overlapping run, are the acceptance evidence.
+
+The release gate rebuilds an allowlisted ZIP with a SHA-256 sidecar. Final artifact
+verification compares packaged code/test bytes to that manifest and exercises the
+extracted Windows installer, setup-check and hook command probes in a disposable
+profile; its receipt is dist/review/integration/package-receipt.json. macOS SSH and
+Tailscale ping timed out, so this follow-up has no macOS host execution evidence.
+Git Bash coverage is not a substitute. Personal installation and remote publication
+remain separate from this local acceptance.
+
 ### Public source connection validation (2026-09-11)
 
 The public source URL and main branch are explicit metadata in scripts/public_source.py.
@@ -227,7 +292,10 @@ could have changed. Instead, lifecycle.py records only the original policy, hook
 and managed skill targets, and checks recorded content hashes before restoration. It
 also rejects discontinuous history: an edit absorbed between two upgrades must not be
 lost in a combined uninstall. Single-version rollback preserves that intermediate state.
-Snapshots contain original bytes and stay local; they are never release inputs.
+Recovery records contain original bytes and stay local; they are never release inputs.
+The maintenance follow-up additionally preserves execution source for new installations,
+as described above; the historical installed-file journal alone could not undo an
+in-place source replacement.
 
 Recovery cannot reconstruct the baseline of an older release without snapshots. A crash
 without complete post-install hashes requires manual inspection; a caught failure with

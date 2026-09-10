@@ -19,6 +19,7 @@ import subprocess
 import sys
 from typing import Final, TypeAlias, TypedDict
 
+sys.dont_write_bytecode = True
 REPO: Final = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 from scripts.native_hook_io import HookRefusal, read_bytes, safe_path
@@ -97,30 +98,38 @@ def rejection_matches(result: subprocess.CompletedProcess[bytes], event: str, sc
     return output == expected.get(event)
 
 
-def probe(home: Path, repo: Path) -> ProbeReport:
+def probe(home: Path, repo: Path, python_executable: Path | str | None = None) -> ProbeReport:
     home, repo = safe_path(home), safe_path(repo)
-    checked = contract.check(home, repo)
     rows: list[ProbeResult] = []
+    try:
+        python, expected = contract.installed_contract(
+            home, repo, {"python_executable": str(python_executable)}
+            if python_executable is not None else None
+        )
+    except HookRefusal as exc:
+        return {"schema": 1, "configuration": "unavailable", "execution": "not-run",
+                "probes": rows, "issues": [str(exc)], "trust": "unverified", "host_dispatch": "unverified"}
+    checked = contract.check(home, repo, python if python_executable is not None else None)
     report: ProbeReport = {"schema": 1, "configuration": checked["status"], "execution": "not-run",
                           "probes": rows, "issues": checked["issues"], "trust": "unverified", "host_dispatch": "unverified"}
     if checked["status"] != "current":
         return report
     config = contract.parse(read_bytes(home / "hooks.json"))
-    for handler in contract.handlers(home, repo):
+    for handler in expected:
         matches = [hook for group in config["hooks"].get(handler.event, [])
                    if group.get("matcher", "") == handler.matcher for hook in group["hooks"]
                    if all(contract.same_json(hook.get(key), value) for key, value in handler.hook.items())]
         if len(matches) != 1:
             report.update(configuration="drift", issues=["exact owned handler mismatch"])
             return report
-    for handler in contract.handlers(home, repo):
+    for handler in expected:
         command = handler.hook["commandWindows" if os.name == "nt" else "command"]
         invocation = [str(Path(os.environ["SystemRoot"]) / "System32/WindowsPowerShell/v1.0/powershell.exe"),
                       "-NoProfile", "-NonInteractive", "-Command", command] if os.name == "nt" else shlex.split(command)
         result = subprocess.run(invocation, cwd=repo, input=b"{", capture_output=True, timeout=10,
                                 env=dict(os.environ, CODEX_HOME=str(home), PYTHONUTF8="1"))
-        rows.append({"event": handler.event, "mode": handler.arguments[1], "exit_code": result.returncode,
-                     "passed": rejection_matches(result, handler.event, Path(handler.arguments[0]).name)})
+        rows.append({"event": handler.event, "mode": handler.mode, "exit_code": result.returncode,
+                     "passed": rejection_matches(result, handler.event, handler.script)})
     report["execution"] = "passed" if all(row["passed"] for row in rows) else "failed"
     return report
 
@@ -198,12 +207,13 @@ def main() -> int:
     parser.add_argument("mode", choices=("probe", "status"))
     parser.add_argument("--home", required=True, type=Path)
     parser.add_argument("--repo", type=Path, default=REPO)
+    parser.add_argument("--python", type=Path)
     parser.add_argument("--project", "--cwd", dest="cwd", type=Path, default=Path.cwd())
     parser.add_argument("--session-id")
     args = parser.parse_args()
     try:
         if args.mode == "probe":
-            report = probe(args.home, args.repo)
+            report = probe(args.home, args.repo, args.python)
             print(json.dumps(report))
             return int(report["execution"] != "passed")
         if not args.session_id:

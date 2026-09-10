@@ -12,13 +12,23 @@ param(
 $ErrorActionPreference = 'Stop'
 
 if(Test-Path $Target) {
-    if(-not (Test-Path (Join-Path $Target '.git'))) {
-        Write-Host "Target exists but is not a git clone: $Target" -ForegroundColor Red
+    $gitRootOutput = @(git -C $Target rev-parse --show-toplevel)
+    $gitRootCode = $LASTEXITCODE
+    if($gitRootCode -ne 0 -or $gitRootOutput.Count -ne 1) {
+        Write-Host "Unable to identify the target Git root (exit $gitRootCode) -- aborting before bootstrap update." -ForegroundColor Red
+        exit 1
+    }
+    $targetRoot = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $Target).ProviderPath).TrimEnd([char[]]'\/')
+    $gitRoot = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath ([string]$gitRootOutput[0])).ProviderPath).TrimEnd([char[]]'\/')
+    if(-not [string]::Equals($gitRoot, $targetRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        Write-Host "Git root does not match bootstrap target -- aborting before status/pull/install." -ForegroundColor Red
+        Write-Host "Git root: $gitRoot" -ForegroundColor Red
+        Write-Host "Bootstrap target: $targetRoot" -ForegroundColor Red
         exit 1
     }
     Push-Location $Target
     try {
-        $dirty = git status --porcelain
+        $dirty = git status --porcelain --untracked-files=all
         if($LASTEXITCODE -ne 0) {
             Write-Host "git status failed (exit $LASTEXITCODE) -- aborting before bootstrap update." -ForegroundColor Red
             exit 1

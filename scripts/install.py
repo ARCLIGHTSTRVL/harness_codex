@@ -24,9 +24,12 @@ SETUP_CHECK = ENGINE_DIR / "setup-check.py"
 # primitive would be unimportable.
 if str(ENGINE_DIR.parent) not in sys.path:
     sys.path.insert(0, str(ENGINE_DIR.parent))
+sys.dont_write_bytecode = True
 from scripts.community import source_digest, source_hashes
+from scripts import source_recovery
 from scripts.installer_support import allocate_backup, is_source_junk            # noqa: E402
 from scripts.installer_snapshot import SourceSnapshot, snapshot_matches_commit   # noqa: E402
+from scripts.runtime import validate_python
 
 STATE_REL = (".codex", "dev-setup-codex-community-state.json")
 # `__pycache__` as an ancestor DIRECTORY, never a leaf file (r4).
@@ -67,6 +70,17 @@ def load_setup_check():
     except Exception as exc:                      # noqa: BLE001 - reported, not swallowed
         raise Refusal("scripts/setup-check.py failed to load (%s: %s)"
                       % (type(exc).__name__, exc))
+    return module
+
+
+def load_native_hooks():
+    path = ENGINE_DIR / "native-hooks.py"
+    spec = importlib.util.spec_from_file_location("community_native_hooks", path)
+    if spec is None or spec.loader is None:
+        raise Refusal("native-hooks module loader unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
     return module
 
 
@@ -504,7 +518,8 @@ def expected_hashes(sc, snapshots, block_texts):
 
 
 def write_state(sc, home, repo, platform, manifests=None, source_dirty=None,
-                head=None, expected=None):
+                head=None, expected=None, recovery_source=None,
+                recovery_digest=None, python_executable=None, update_repo=None):
     """Record the baseline from facts the install flow already established.
 
     `manifests`, `source_dirty` and `head` are all passed in, and all three are
@@ -576,6 +591,15 @@ def write_state(sc, home, repo, platform, manifests=None, source_dirty=None,
         "files": {key: files[key] for key in sc.HASH_KEYS},
         "skills_manifest": manifests["skills_manifest"],
     }
+    if recovery_source is not None or recovery_digest is not None:
+        if recovery_source is None or recovery_digest is None:
+            raise Refusal("recovery source and digest must be recorded together")
+        state["recovery_source"] = str(recovery_source)
+        state["recovery_digest"] = recovery_digest
+    if python_executable is not None:
+        state["python_executable"] = str(python_executable)
+    if update_repo is not None:
+        state["update_repo"] = str(update_repo)
     state_path = sc.codex_home(home) / STATE_REL[-1]
     state_path.parent.mkdir(parents=True, exist_ok=True)
     # ensure_ascii keeps the file 7-bit: a manifest name may hold a lone
@@ -1002,15 +1026,7 @@ def recorded_manifest(sc, state, key):
 
 # --- helper processes -----------------------------------------------------
 def python_exe():
-    """The interpreter this engine runs under, link-resolved.
-
-    Resolved on BOTH platforms: the Mac installer realpath'd it (so a venv
-    symlink could not persist a launcher that outlives the venv) while Windows
-    only made it absolute, and interpreter resolution is not on the short list
-    of things allowed to differ by platform.
-    """
-    path = Path(sys.executable)
-    return str(path.absolute() if sys.prefix != sys.base_prefix else path.resolve())
+    return os.path.abspath(sys.executable)
 
 
 def run_helper(*argv):
@@ -1036,6 +1052,49 @@ def run_lint(repo):
         raise Refusal("Lint failed. Fix above before installing.")
 
 
+def _absolute_state_path(state, key, required=False):
+    if key not in state:
+        if required:
+            raise Refusal("installation state is missing " + key)
+        return None
+    value = state[key]
+    if not isinstance(value, str) or not Path(value).is_absolute():
+        raise Refusal("installation state has invalid " + key)
+    return Path(value)
+
+
+def prepare_install_recovery(args):
+    sc = load_setup_check()
+    root = sc.codex_home(args.home).absolute()
+    state_path = root / STATE_REL[-1]
+    original_state = sample_target(state_path)
+    original_hooks = sample_target(root / "hooks.json")
+    state = load_state(state_path)
+    update_repo = None
+
+    if isinstance(state, dict) and state.get("distribution") == "community" and sc.state_schema_current(state):
+        prior_snapshot = source_recovery.state_snapshot(state, root, verify=False)
+        prior_repo = _absolute_state_path(state, "source_repo", required=True)
+        prior_update = _absolute_state_path(state, "update_repo")
+        if "python_executable" in state and (not isinstance(state["python_executable"], str)
+                                               or not Path(state["python_executable"]).is_absolute()):
+            raise Refusal("installation state has invalid python_executable")
+        if prior_snapshot is not None and os.path.normcase(os.path.abspath(prior_repo)) == os.path.normcase(
+                os.path.abspath(prior_snapshot)) and os.path.normcase(os.path.abspath(args.repo)) == os.path.normcase(
+                os.path.abspath(prior_snapshot)):
+            update_repo = prior_update
+
+    current_python = validate_python(python_exe(), require_yaml=True)
+    prepared = source_recovery.prepare(args.repo)
+    recovery_source = source_recovery.publish(root, prepared)
+    args.recovery_source = recovery_source
+    args.recovery_digest = prepared.digest
+    args.python_executable = current_python
+    args.update_repo = update_repo
+    args.prior_state_expected = original_state
+    args.prior_hooks_expected = original_hooks
+
+
 # --- install --------------------------------------------------------------
 def apply_install(args):
     sc = load_setup_check()
@@ -1051,11 +1110,18 @@ def apply_install(args):
 
     print("[0a] Native hooks")
     if run_helper(python_exe(), ENGINE_DIR / "native-hooks.py", "install",
-                  "--home", sc.codex_home(home), "--repo", repo):
+                   "--home", sc.codex_home(home), "--repo", repo,
+                   "--python", args.python_executable):
         raise Refusal("Native hook installation failed; managed outputs were not applied.")
 
     if not args.force:
         reason = sync_reason(sc, home, repo, platform)
+        installed = load_state(sc.codex_home(home) / STATE_REL[-1]) or {}
+        saved_python = installed.get("python_executable")
+        if reason is None and (not isinstance(saved_python, str)
+                               or os.path.normcase(os.path.abspath(saved_python)) != os.path.normcase(
+                                   os.path.abspath(args.python_executable))):
+            reason = "installed Python differs; refreshing hooks and state"
         if reason is None:
             print("In sync: community source content -- skipping. Use --force to re-apply.")
             return 0
@@ -1110,10 +1176,16 @@ def apply_install(args):
                   tree.label, stamp)
     if source_digest(repo) != initial_digest:
         raise Refusal("Source changed during installation; state not written")
+    if source_recovery.prepare(repo).digest != args.recovery_digest:
+        raise Refusal("Recovery source changed during installation; state not written")
     print("\n[5] State file")
     write_state(sc, home, repo, platform, manifests, source_dirty, head,
                 expected=expected_hashes(sc, snapshots,
-                                         {"codex": codex_block}))
+                                         {"codex": codex_block}),
+                recovery_source=args.recovery_source,
+                recovery_digest=args.recovery_digest,
+                python_executable=args.python_executable,
+                update_repo=args.update_repo)
 
     print("\n=== Done ===")
     return 0
@@ -1124,6 +1196,7 @@ def cmd_install(args):
     if getattr(args, "dry_run", False):
         return lifecycle.preview(sys.modules[__name__], args)
     run_lint(args.repo)
+    prepare_install_recovery(args)
     return lifecycle.install(sys.modules[__name__], args, apply_install)
 
 

@@ -1,5 +1,7 @@
 # Knowledge log
 
+## [2026-09-11] decision | Consolidated the maintenance review findings and authorized recovery/runtime design in maintenance-reliability. Implementation verification remains pending; source snapshot integrity and journal continuity are explicit acceptance boundaries.
+
 ## [2026-09-10] create | Initialized the community distribution knowledge base
 
 ## [2026-09-10] close | Recorded 0.1.1 readiness decisions, alternatives, recovery risks and Windows/macOS acceptance in docs/PACKAGING.md; retained source deltas locally as archived records rather than duplicating the release contract into a second page.
@@ -27,3 +29,7 @@
 ## [2026-09-11] verify | Public-source code and skill integration passed the required Windows suite and an actual temporary-profile installation plus offline/online setup checks. docs/PACKAGING.md records measured results and local receipt paths; publication and user-profile installation remain separate actions.
 
 ## [2026-09-11] publish | After explicit user authorization, published implementation commit f626e89450af31cad2abbcbfd796e479594d213f to public main and verified matching local/tracking/live remote refs. The reviewed diff matched before staging and staged secret checks passed. No personal harness installation was replaced.
+
+## [2026-09-11] verify | Closed local maintenance remediation after 68 tests passed in 247.301 seconds with 101 unchanged code/test inputs. Consolidated runtime confinement, preserved-source recovery and interpreter-identity findings into maintenance-reliability. Actual macOS execution, publication and personal installation remain separate boundaries.
+
+## [2026-09-11] lint | Final kb-lint passed with four content pages and zero issues; no unconsolidated maintenance deltas remain.

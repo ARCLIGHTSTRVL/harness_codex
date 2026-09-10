@@ -13,7 +13,9 @@ directory is available, ask the user to choose or clone one rather than silently
 a personal fork or arbitrary repository.
 
 Default/status: run `python <repo>/scripts/setup-check.py`. Sync: use the sync skill from
-`<repo>`. Hooks: run `python <repo>/scripts/native-hooks.py check`. Doctor: from the
+the state's `update_repo` when present, otherwise `<repo>`. Rollback may set
+`source_repo` to a preserved execution snapshot while retaining the update checkout.
+Hooks: run `python <repo>/scripts/native-hooks.py check`. Doctor: from the
 `<repo>` root run `python <repo>/scripts/lint.py` and `python <repo>/scripts/setup-check.py`; run
 `python <repo>/scripts/project-health.py --selftest` from the project being diagnosed.
 Project-init: use the project-init skill. Skills: read `<repo>/SKILLS.md`. Status/hooks/
@@ -27,7 +29,9 @@ For a received ZIP, read `<repo>/START-HERE.md` and use `python <repo>/scripts/o
 to check the environment and preview targets, then `python <repo>/scripts/onboard.py --apply`
 for an authorized install. Rollback/uninstall use `python <repo>/scripts/install.py` with
 `--home`, `--repo` and `--platform`; preview is the default and `--apply` performs the
-displayed restoration. Changed files block recovery. Never erase user edits to make a
+displayed restoration. Rollback restores preserved execution source as well as installed
+files; it requires an intact source snapshot and the recorded Python interpreter.
+Changed files block recovery. Never erase user edits to make a
 recovery check pass. Knowledge scaffolding: `python <repo>/scripts/init-knowledge.py`
 PROJECT with optional `--hooks`, then `--apply`; existing project files are preserved.
 

@@ -45,7 +45,11 @@ overwrite an existing destination or change a fork/custom remote automatically.
    This checks prerequisites and prints the installation targets without changing them.
 4. Run `python scripts/onboard.py --apply`. If PyYAML is missing, this creates a private
    `.runtime` virtual environment and installs requirements there. No global pip changes.
-   Use that interpreter for later checks if it was created.
+   Later installer/sync entrypoints reuse a valid dependency runtime. Status checks
+   read the installation's interpreter from state, so ordinary Python can run them.
+   Private dependency setup ignores pip configuration files and destination overrides.
+   If a custom package index is required, supply it through pip's index environment
+   settings; ordinary proxy environment settings remain available.
 5. Verify `python scripts/setup-check.py`. Review/trust exact hook definitions through
    the host's hook UI (`/hooks` where supported), then reopen a session if needed to load
    the installed skills. File verification is distinct from runtime activation.
@@ -90,6 +94,13 @@ at a time to recover the intermediate user-edited version without discarding it.
 
 Recovery history remains local in `dev-setup-codex-community-recovery.json` under
 CODEX_HOME, alongside the install state. It contains original file bytes; never share it.
+New installations also preserve allowlisted execution source under
+`dev-setup-codex-community/sources/` in CODEX_HOME. Rollback connects restored hooks to
+that source without rewriting your Git checkout. The state retains the original checkout
+as `update_repo` for the next sync. Keep the recorded Python runtime available;
+source snapshots do not include virtual-environment binaries. Missing or modified
+recovery source blocks rollback before target changes. Older state without a source
+snapshot can be restored only while its original source still matches the recorded hash.
 Backups and native runtime records are retained after uninstall. A pre-0.1.1 installation
 has no original recovery baseline: rollback can restore that version, but a full removal
 requires its earlier backups. An interrupted process without a complete post-write record

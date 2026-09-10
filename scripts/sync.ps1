@@ -12,7 +12,22 @@ $pwsh = Get-Command pwsh -ErrorAction SilentlyContinue
 
 Push-Location $repo
 try {
-    $dirty = git status --porcelain
+    $gitRootOutput = @(git rev-parse --show-toplevel)
+    $gitRootCode = $LASTEXITCODE
+    if ($gitRootCode -ne 0 -or $gitRootOutput.Count -ne 1) {
+        Write-Host "Unable to identify the Git root (exit $gitRootCode) -- aborting before sync." -ForegroundColor Red
+        exit 1
+    }
+    $sourceRoot = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $repo).ProviderPath).TrimEnd([char[]]'\/')
+    $gitRoot = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath ([string]$gitRootOutput[0])).ProviderPath).TrimEnd([char[]]'\/')
+    if (-not [string]::Equals($gitRoot, $sourceRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        Write-Host "Git root does not match sync source -- aborting before status/pull/install." -ForegroundColor Red
+        Write-Host "Git root: $gitRoot" -ForegroundColor Red
+        Write-Host "Sync source: $sourceRoot" -ForegroundColor Red
+        exit 1
+    }
+
+    $dirty = git status --porcelain --untracked-files=all
     if ($LASTEXITCODE -ne 0) {
         Write-Host "git status failed (exit $LASTEXITCODE) -- aborting before sync." -ForegroundColor Red
         exit 1

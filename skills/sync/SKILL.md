@@ -5,8 +5,10 @@ description: Update an existing community Git clone and apply the local installe
 
 # sync
 
-Read `source_repo` first from `CODEX_HOME/dev-setup-codex-community-state.json` (default
-`CODEX_HOME` is `~/.codex`) and use that existing source directory as `<repo>`. If state
+Read `update_repo`, falling back to `source_repo`, from
+`CODEX_HOME/dev-setup-codex-community-state.json` (default `CODEX_HOME` is `~/.codex`)
+and use that existing update directory as `<repo>`. After rollback, `source_repo` can
+be a preserved execution snapshot; update the checkout named by `update_repo`. If state
 is absent or stale, inspect the supplied/current community checkout. The canonical public
 source is [public repository](https://github.com/ARCLIGHTSTRVL/harness_codex); if no source
 directory is available, ask the user to choose or clone one rather than silently selecting
@@ -23,7 +25,9 @@ git -C <repo> rev-parse --abbrev-ref --symbolic-full-name '@{u}'
 If it tracks a fork or custom source, report that fact and leave the remote unchanged.
 From the clean `<repo>` root, run `.\scripts\sync.ps1` on Windows or `bash scripts/sync.sh`
 on macOS. These wrappers use the current branch's configured tracking remote and branch,
-run `git pull --ff-only`, then apply the local installer. They do not support ZIP
+require the source directory itself to be the Git root, run `git pull --ff-only`, then
+apply the local installer using shared dependency-runtime selection. A ZIP nested in
+another repository is refused before pulling that parent. They do not support ZIP
 auto-update and do not run setup-check automatically. Afterward, run
 `python <repo>/scripts/setup-check.py` to verify the local installation.
 

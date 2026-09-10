@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 
 from scripts.public_source import report as public_source_report
+from scripts import source_recovery
+from scripts.runtime import validate_python
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE_NAME = "dev-setup-codex-community-state.json"
@@ -52,6 +54,15 @@ def findings(sc, home, repo, platform=None, hooks=True, probe=False):
         if not sc.state_schema_current(state):
             return ["unsupported installation state schema"]
         issues = []
+        source_recovery.state_snapshot(state, target, verify=True)
+        if "python_executable" in state:
+            value = state["python_executable"]
+            if not isinstance(value, str) or not Path(value).is_absolute():
+                raise RuntimeError("invalid python_executable in installation state")
+            validate_python(value, require_yaml=True)
+        if "update_repo" in state and (not isinstance(state["update_repo"], str)
+                                        or not Path(state["update_repo"]).is_absolute()):
+            raise RuntimeError("invalid update_repo in installation state")
         if platform and state.get("platform") != platform:
             issues.append("installed platform differs")
         if state.get("source_repo") != str(Path(repo).resolve()):

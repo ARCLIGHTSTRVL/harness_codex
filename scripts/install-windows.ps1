@@ -58,6 +58,11 @@ $engineArgs = @('install', '--home', $env:USERPROFILE, '--repo', $repo,
                 '--platform', 'windows')
 if($Force) { $engineArgs += '--force' }
 if($Preview) { $engineArgs += '--dry-run' }
+$runtimeArgs = @('--repo', $repo)
+if(-not $Preview) { $runtimeArgs += '--apply' }
+$runtimeArgs += '--'
+$runtimeArgs += "$repo\scripts\install.py"
+$runtimeArgs += $engineArgs
 
 # try/catch is load-bearing, not decoration (reproduced on pwsh 7.6.4): under
 # $PSNativeCommandUseErrorActionPreference = $true -- a supported pwsh 7 setting a
@@ -66,7 +71,7 @@ if($Preview) { $engineArgs += '--dry-run' }
 # read. The engine has already printed its own reason either way; this only
 # decides the code this script exits with.
 try {
-    & $pyCmd "$repo\scripts\install.py" @engineArgs
+    & $pyCmd "$repo\scripts\runtime.py" @runtimeArgs
     $code = $LASTEXITCODE
 } catch {
     $code = if($LASTEXITCODE) { $LASTEXITCODE } else { 1 }

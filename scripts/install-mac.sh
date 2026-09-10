@@ -55,6 +55,9 @@ fi
 engine_args=(install --home "$HOME" --repo "$REPO" --platform mac)
 if [[ $FORCE -eq 1 ]]; then engine_args+=(--force); fi
 if [[ $PREVIEW -eq 1 ]]; then engine_args+=(--dry-run); fi
+runtime_args=(--repo "$REPO")
+if [[ $PREVIEW -eq 0 ]]; then runtime_args+=(--apply); fi
+runtime_args+=(-- "$REPO/scripts/install.py" "${engine_args[@]}")
 
 # set -e propagates the engine's exit status; it has already printed its reason.
-"$PYTHON_CMD" "$REPO/scripts/install.py" "${engine_args[@]}"
+"$PYTHON_CMD" "$REPO/scripts/runtime.py" "${runtime_args[@]}"

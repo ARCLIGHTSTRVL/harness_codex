@@ -6,6 +6,8 @@
   role choices, unit context policy, recovery alternatives and preservation across upgrades.
 - [[public-source-connection]] — explicit public source discovery, offline installation
   checks, optional revision comparison and preservation of recipient fork remotes.
+- [[maintenance-reliability]] — reproduced update/recovery failures, preserved execution
+  source, runtime identity and user-edit protection across repeated recovery.
 
 ## Journal
 

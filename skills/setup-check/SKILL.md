@@ -18,13 +18,20 @@ selects a profile root; `CODEX_HOME` overrides the Codex directory. `--probe-hoo
 exact command probes only. Configuration, trust and host event delivery are separate facts.
 ZIP installs need no Git history for this local status check.
 
+Without `--repo`, the checker uses the installed state's execution source, including
+a snapshot activated by rollback. Explicit `--repo` compares against that supplied
+directory. Hook expectations and probes use the recorded installation interpreter;
+the diagnostic Python need not be the same virtual environment. A missing installed
+interpreter is a failure to investigate, not a reason to rewrite hooks automatically.
+
 The default check is offline. It prints the canonical public repository and states that
 the latest public revision was not checked. Use `python <repo>/scripts/setup-check.py
 --check-updates` only when an explicit public comparison is wanted. That opt-in query uses
 `git ls-remote` for the canonical `main` ref, then compares its tip with the actual Git
 checkout's committed root `HEAD`; it reports equal, different or unknown and makes no
 ancestry claim. Working-tree edits are outside that comparison. For a ZIP source, the
-local check still works and the public comparison is unknown.
+local check still works and the public comparison is unknown. A rollback snapshot also
+has no Git identity; do not report the update checkout's HEAD as the restored version.
 
 If the user separately requests a ZIP-to-Git migration, suggest the following sequence;
 setup-check itself remains read-only and does not clone or install. Leave the extracted

@@ -55,3 +55,33 @@ Decision rationale: knowledge/comparisons/public-source-connection.md.
 
 The Windows and macOS sync wrappers retain their existing pull/install behavior and
 configured tracking source. No remotes, account settings or installed-state schema change.
+
+## Maintenance reliability (UNCOMMITTED)
+
+These working-tree contracts supersede the affected historical entrypoint/recovery
+claims above. Local acceptance passed 68 tests on the frozen working tree; evidence
+and platform limits are in docs/PACKAGING.md. Decision context:
+knowledge/comparisons/maintenance-reliability.md.
+
+- `scripts/sync.ps1`, `scripts/sync.sh`, `scripts/bootstrap-windows.ps1` and
+  `scripts/bootstrap-mac.sh`: exact source-root discovery and successful explicit
+  untracked-file status precede pull/install. Valid linked Git worktrees retain their
+  own root identity. Existing tracking configuration is unchanged.
+- `scripts/runtime.py:select_python`: shares dependency-runtime selection across
+  onboarding and both installer wrappers. It validates runtime boundaries before
+  probing packages and isolates pip's destination during apply. Preview creates no venv.
+- `scripts/source_recovery.py:prepare`, `scripts/source_recovery.py:publish` and
+  `scripts/source_recovery.py:validate`: capture the current release allowlist, publish
+  a content-addressed local source, and verify historical copies against their own
+  complete file content identity rather than a newer release's required file list.
+- `scripts/install.py:prepare_install_recovery` and `scripts/lifecycle.py:activate_source`:
+  new installations record source recovery and interpreter identity. Rollback retargets
+  exact owned hook commands to preserved source while retaining the editable update
+  checkout. The journal retains user-edit mismatches across successive restorations.
+- `scripts/setup-check.py:installed_source_repo`, `scripts/native-hooks.py:installed_contract`
+  and `scripts/native-hook-status.py:probe`: status defaults to installed execution
+  source; checks and command probes use the installation interpreter. Explicit --repo
+  retains comparison behavior, and snapshots have no public Git revision identity.
+
+Source recovery does not preserve interpreter binaries, establish host trust or prove
+native host event delivery. Packaging and platform acceptance remain in docs/PACKAGING.md.

@@ -218,7 +218,7 @@ class DistributionTests(unittest.TestCase):
         self.install(source)
         self.lifecycle("rollback", apply=True)
         self.assertEqual((self.codex / "skills/doctor/SKILL.md").read_bytes(), original)
-        self.check()
+        self.run_script("setup-check.py", "--home", self.home)
 
     def test_uninstall_preserves_edits_between_installations(self):
         self.install()

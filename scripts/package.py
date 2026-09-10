@@ -20,6 +20,7 @@ FILES = ("README.md", "START-HERE.md", "BOOTSTRAP.md", "SKILLS.md", "NOTICE.md",
          "knowledge/SCHEMA.md", "knowledge/index.md", "knowledge/log.md",
          "knowledge/comparisons/portable-distribution.md",
          "knowledge/comparisons/public-source-connection.md",
+         "knowledge/comparisons/maintenance-reliability.md",
          "knowledge/journal/2026-09-10-distribution-readiness.md",
          "wiki/SCHEMA.md", "wiki/index.md", "wiki/log.md", "wiki/AGENTS.md")
 ROUTING_MAPPING_NAME = "agent-routing.json"

@@ -1,5 +1,7 @@
 # Wiki log
 
+## [2026-09-11] refresh | Added UNCOMMITTED maintenance contracts for exact Git roots, shared dependency runtime, source-preserving rollback and installed-interpreter checks. Historical pins remain distinct; integration acceptance is pending.
+
 ## [2026-09-10] create | Initialized the community distribution wiki
 
 ## [2026-09-10] refresh | Added onboarding, recovery and knowledge lifecycle source contracts; recorded cross-platform acceptance and host-delivery limits in docs/PACKAGING.md.
@@ -19,3 +21,7 @@
 ## [2026-09-11] lint | Knowledge lint passed; wiki lint retained the six existing medium documentation-coverage advisories without a blocking finding. Current public-source contracts were checked against the working tree and required acceptance evidence.
 
 ## [2026-09-11] publish | Pinned public-source contracts to f626e89 after push and matching local HEAD, origin/main and live public main readback. Updated the handoff from pending authorization to published implementation.
+
+## [2026-09-11] refresh | Checked update, shared-runtime, source-recovery and saved-interpreter contracts against the frozen working tree and its 68-test acceptance. Kept the new contracts explicitly uncommitted and retained macOS/host-delivery limitations in docs/PACKAGING.md.
+
+## [2026-09-11] lint | Final wiki lint retained seven medium documentation-coverage advisories and no blocking finding. The contract index was refreshed; comprehensive page coverage remains separate maintenance work.

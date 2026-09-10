@@ -124,6 +124,9 @@ def install(engine, args, action):
         if any(row["status"] in ("prepared", "failed") for row in rows):
             raise ValueError("unfinished installation: preview rollback before reinstalling")
         before = {rel: read(root / rel) for rel in before}
+        if (getattr(args, "prior_state_expected", before.get(STATE)) != before.get(STATE)
+                or getattr(args, "prior_hooks_expected", before.get("hooks.json")) != before.get("hooks.json")):
+            raise ValueError("installation inputs changed after recovery preflight")
         row = {"id": uuid4().hex, "status": "prepared",
                "before": {rel: None if data is None else base64.b64encode(data).decode() for rel, data in before.items()},
                "modes": {rel: stat.S_IMODE((root / rel).stat().st_mode) for rel, data in before.items() if data is not None},
@@ -144,6 +147,60 @@ def install(engine, args, action):
                 rows.pop()
             save(engine, root, rows, written)
             print("Recovery snapshot: " + str(root / RECOVERY))
+
+
+def _state_path(state, key, required=False):
+    if key not in state:
+        if required:
+            raise ValueError("saved installation state is missing " + key)
+        return None
+    value = state[key]
+    if not isinstance(value, str) or not Path(value).is_absolute():
+        raise ValueError("saved installation state has invalid " + key)
+    return Path(value)
+
+
+def activate_source(engine, root, desired):
+    raw_state = desired.get(STATE)
+    if raw_state is None:
+        return desired, None
+    try:
+        state = json.loads(raw_state)
+    except (ValueError, UnicodeError) as exc:
+        raise ValueError("saved installation state is invalid") from exc
+    sc = engine.load_setup_check()
+    if (not isinstance(state, dict) or state.get("distribution") != "community"
+            or not sc.state_schema_current(state)):
+        raise ValueError("saved installation state is unsupported")
+    old_repo = _state_path(state, "source_repo", required=True)
+    update_repo = _state_path(state, "update_repo") or old_repo
+    snapshot = engine.source_recovery.state_snapshot(state, root, verify=True)
+    hooks = desired.get("hooks.json")
+    native_hooks = engine.load_native_hooks()
+    if "python_executable" in state:
+        python = _state_path(state, "python_executable", required=True)
+        python = engine.validate_python(python, require_yaml=True)
+    else:
+        if hooks is None:
+            raise ValueError("saved hooks are required to recover a legacy interpreter")
+        python = native_hooks.legacy_python(native_hooks.parse(hooks), root, old_repo)
+        python = engine.validate_python(python, require_yaml=True)
+    if snapshot is None:
+        recorded = state.get("source_digest")
+        if not isinstance(recorded, str) or engine.source_digest(old_repo) != recorded:
+            raise ValueError("legacy recovery source no longer matches its recorded digest")
+        return desired, {"snapshot": None, "python": python}
+    if hooks is None:
+        raise ValueError("saved hooks are missing; recovery cannot activate its source")
+    activated = dict(desired)
+    state["source_repo"] = str(snapshot)
+    state["update_repo"] = str(update_repo)
+    state["python_executable"] = str(python)
+    activated[STATE] = (json.dumps(state, indent=2) + "\n").encode("utf-8")
+    activated["hooks.json"] = native_hooks.retarget(
+        hooks, root, old_repo, snapshot, python
+    )
+    return activated, {"snapshot": snapshot, "python": python}
 
 
 def restore(engine, args, uninstall=False):
@@ -172,6 +229,10 @@ def restore(engine, args, uninstall=False):
     conflicts = [rel for rel in desired if digest(current[rel]) != expected[rel] and current[rel] != desired[rel]]
     if conflicts:
         raise ValueError("files changed since installation; nothing restored: " + ", ".join(conflicts))
+    original = dict(desired)
+    activation = None
+    if not uninstall:
+        desired, activation = activate_source(engine, root, desired)
     for rel, data in desired.items():
         print(("remove: " if data is None else "restore: ") + rel)
     if not args.apply:
@@ -180,6 +241,10 @@ def restore(engine, args, uninstall=False):
     with locked(root):
         if read(root / RECOVERY) != raw or any(read(root / rel) != data for rel, data in current.items()):
             raise ValueError("recovery inputs changed; nothing restored")
+        if activation is not None:
+            if activation["snapshot"] is not None:
+                engine.source_recovery.validate(activation["snapshot"], activation["snapshot"].name)
+            engine.validate_python(activation["python"], require_yaml=True)
         for rel, data in desired.items():
             target = root / rel
             if current[rel] == data:
@@ -195,6 +260,12 @@ def restore(engine, args, uninstall=False):
                     target.chmod(modes[rel])
         for row in selected:
             row["status"] = "restored"
+        surviving = [row for row in rows if row["status"] != "restored"]
+        if not uninstall and surviving:
+            previous = surviving[-1]
+            for rel in ("hooks.json", STATE):
+                if desired.get(rel) != original.get(rel) and previous["after"].get(rel) == digest(original.get(rel)):
+                    previous["after"][rel] = digest(desired.get(rel))
         save(engine, root, rows, raw)
     print("Restored recorded files. Local backups and runtime records are retained.")
     return 0

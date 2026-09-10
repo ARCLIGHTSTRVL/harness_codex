@@ -34,6 +34,11 @@ for the local source location. Skills provide explicit clone and download naviga
 when no usable source can be found. Existing fork remotes remain recipient-owned;
 sync continues to use the checkout's configured tracking branch.
 
+The later [[maintenance-reliability]] decision separates an execution snapshot from
+its update checkout after rollback: source_repo names executed source and update_repo
+names the checkout used by sync. The original distinction between local content and
+public revision evidence remains unchanged.
+
 Normal setup-check remains offline. An explicit --check-updates adds a bounded,
 read-only public revision lookup. Report local installation agreement and public
 revision equality independently. A different revision is not proof that the clone
