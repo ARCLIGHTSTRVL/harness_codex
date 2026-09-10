@@ -1,220 +1,224 @@
 # harness_codex
 
-`harness_codex` is a portable workflow harness for Codex on Windows and macOS. It
-installs reusable skills, project templates, health checks, saved handoff support and
-native hook adapters through one shared Python installer.
+`harness_codex` is a portable workflow harness for Codex on Windows and macOS. It helps a
+coding session turn a request into a bounded result, verify it against the current source,
+and leave enough durable state for later work.
 
-The harness is built around bounded autonomous units. A unit has a concrete outcome,
-relevant context, acceptance checks and evidence tied to the current source. Code is the
-source of truth for behavior. New prose comments and docstrings are limited to a short,
-stable file-purpose statement. The code-derived `wiki/` explains mechanics, while
-`knowledge/` preserves full decisions, alternatives, evidence and risks. `NEXT.md`
-carries one active handoff.
+The distribution installs user-level policy, reusable skills, native hook adapters,
+health checks, and project templates through one shared Python installer. It does not
+ship account data, credentials, provider configuration, SSH destinations, permissions,
+or fixed model assignments.
 
-Delegation is optional and model-neutral. The recipient chooses supported models and
-reasoning efforts from their own host catalog. This repository ships no account data,
-provider configuration, credentials or fixed model assignments.
+## Why use a workflow harness?
+
+Long-running software work often fails between the request and the next session. Scope expands,
+evidence goes stale, design decisions survive only in chat, or a clean status check is mistaken
+for proof that a host delivered an event. This harness gives Codex a consistent operating
+contract and gives projects explicit places for current state, mechanics, and decisions.
+
+The goal is practical continuity. A small change can stay small; a complex change can carry a
+plan and evidence across sessions. Current code and observed execution remain more authoritative
+than a summary written earlier.
+
+## Operating principles
+
+### 1. Work in bounded autonomous units
+
+A unit has one concrete outcome, the context it needs, and explicit completion conditions.
+Once authorized, Codex can investigate, implement, test, update affected documentation, and
+close the unit without repeatedly asking about routine reversible choices.
+
+For example, “fix the installer” becomes a reproduction, a scoped implementation, and
+an extracted-package installation check. An unrelated refactor remains outside that
+unit even when it would be convenient to include.
+
+### 2. Define purpose and acceptance before editing
+
+The workflow turns a vague request into behavior that can be checked. More than one
+reasonable design, a public contract change, or a durable data-shape choice receives
+design attention before code changes. Mechanical fixes can proceed directly.
+
+Acceptance follows the surface being changed. Library behavior may need a focused test;
+an installer needs an actual isolated installation; a packaged release needs checks
+against the extracted archive.
+
+### 3. Separate source truth from observed evidence
+
+Source code is the reference for what the implementation does. A test log, installed
+state, hook configuration, and live host behavior are separate observations with their
+own scope and revision.
+
+For example, `setup-check` can confirm installed bytes and configured hook commands. It
+cannot by itself prove that the host trusted a hook, delivered an event, or exposed the
+result to a model. Reports should state which layer was actually observed.
+
+### 4. Keep changes small and attributable
+
+Every changed line should trace to the accepted outcome. The policy favors simple code,
+targeted searches, narrow patches, and the smallest meaningful verification set. It asks
+agents to preserve existing work instead of resetting or broadly cleaning a working tree.
+
+Code comments stay sparse: a short file-purpose statement is enough for most source.
+Mechanics belong in the code-derived wiki, while rationale and rejected alternatives
+belong in the knowledge layer.
+
+### 5. Give durable information one clear home
+
+Current action, broader phase state, code mechanics, and human reasoning change at different
+rates. The templates keep them separate so a handoff does not become a backlog and a wiki
+page does not become an unstructured decision journal.
+
+The agent still owns the semantic work. Scripts can validate records and preserve a
+written handoff, but they do not infer decisions that were never recorded.
+
+### 6. Recover from interruptions without claiming perfect continuity
+
+`NEXT.md`, optional plan handoffs, freshness checks, and native hooks make saved state
+available after a pause or compaction. The next session rechecks that state against the
+current commit and dirty files before relying on it.
+
+This reduces context loss; it cannot guarantee zero context drift. A changed dependency
+contract or working tree invalidates affected prior evidence until it is checked again.
+
+### 7. Keep delegation optional and recipient-owned
+
+The harness can validate and attest native role routing when the recipient configures it.
+Project choices take precedence over an optional user-level default; without either, routing stays unset.
+
+The distribution does not choose models or reasoning efforts. Delegated reports are inputs to
+the parent agent, which remains responsible for source inspection, integration, and completion.
+
+## A unit in practice
+
+The path is iterative rather than a mandatory phase count. The agent writes durable artifacts as needed.
+
+```mermaid
+flowchart TD
+    R[Request] --> S[Scope and acceptance]
+    S --> D[Inspect source and design]
+    D --> I[Implement]
+    I --> V[Verify]
+    V -->|Changes needed| I
+    V -->|Accepted| E[Record evidence and decisions]
+    E --> A[Update wiki mechanics or knowledge rationale]
+    A --> H[Close unit or save NEXT / plan handoff]
+    H -. Later session: recheck saved state .-> D
+```
+
+## What the harness includes
+
+- **Direct-session policy.** The managed `AGENTS.md` block defines scope, autonomy,
+  preservation, verification, review, and communication rules. Existing instructions
+  outside that block remain under the recipient's control.
+- **Reusable workflow skills.** `dev-setup` routes status, sync, hooks, doctor, skills,
+  and project initialization. Focused skills cover interviews, codebase wiki work,
+  knowledge capture, health checks, transcript recall, review, and scoped cleanup. See
+  [SKILLS.md](SKILLS.md) for the catalog.
+- **Durable project bootstrap.** `project-init` creates an `AGENTS.md` front door, one
+  active `NEXT.md` handoff, workflow space, source-pinned wiki, human-facing knowledge,
+  and optional project hooks. Existing projects can add only the missing knowledge
+  scaffold with `scripts/init-knowledge.py`.
+- **Health and evidence checks.** `project-health.py` reports lightweight NEXT freshness,
+  hook drift, and doctor recency, and records a user-level liveness heartbeat when run
+  normally. `doctor` performs deeper wiki, knowledge, fragment, and template checks.
+  `setup-check.py` compares installed managed content and hook commands with the recorded
+  source.
+- **Scoped installation and recovery.** Preview-first installation manages only its
+  policy block, shipped skills, hook definitions, and state. It backs up replaced managed
+  paths, preserves unrelated files, and refuses unsafe linked boundaries. Rollback and
+  uninstall refuse to overwrite files changed after installation.
+- **Portable dependency runtime.** When the invoking Python lacks PyYAML, onboarding can
+  create a repository-local `.runtime` and install requirements there without changing
+  global Python packages. Later installer and status paths retain the recorded interpreter
+  contract.
+- **Source and release tooling.** Sync operates on a clean exact Git root and keeps its
+  configured tracking source. Packaging creates an allowlisted deterministic ZIP and an
+  adjacent SHA-256 file while excluding Git history, runtime state, account data, and
+  private notes.
+
+Everyday examples include running `dev-setup status` before maintenance, using
+`deep-interview` to turn an ambiguous feature into an accepted spec, capturing a consequential
+choice with `knowledge-fragment`, or running `doctor` before a milestone.
+
+## Project information layers
+
+| Layer | Purpose |
+|---|---|
+| `AGENTS.md` | Project-specific operating rules and cold-start routing |
+| `NEXT.md` | One current unit and its next action |
+| `workflow/` | Broader phase state and resumable plans |
+| `wiki/` | Terse, source-pinned code mechanics and architecture |
+| `knowledge/` | Decisions, experiments, comparisons, evidence, and risks |
+| `knowledge/_fragments/` | Temporary per-unit deltas awaiting review and consolidation |
+
+## Guidance and enforced safeguards
+
+The harness combines policy with executable checks. They have different strength.
+
+| Surface | What it provides | Boundary |
+|---|---|---|
+| Policy and skills | Guidance for scope, design, evidence, documentation, and review | Depends on the active agent and host following the installed instructions |
+| Installer and recovery scripts | Managed-path ownership, backups, path/link checks, source snapshots, and edit-sensitive recovery | Applies only to files and state managed by this distribution |
+| Setup and health checks | Current content, configuration, freshness, and runnable command probes | Does not establish host trust, event delivery, or request runtime identity |
+| Handoff hooks and templates | Storage and recovery of state the agent explicitly wrote | Cannot summarize an unrecorded conversation or guarantee zero context drift |
+| Native routing hooks | Validation of recipient-selected roles against a fresh catalog attestation | Does not select a model or prove the service-side identity that handled a request |
 
 ## Install
 
-Prerequisites:
+Read [START-HERE.md](START-HERE.md) for the full receiver procedure and recovery boundary.
+You need Codex, Python 3.11+, Git, and Git Bash for shell-based project hooks on Windows.
 
-- Codex and Python 3.11 or newer
-- Git
-- Git Bash on Windows for shell-based project hook templates
-
-The canonical public source is
-[public repository](https://github.com/ARCLIGHTSTRVL/harness_codex). For an
-initial Git install, clone it into a new permanent directory:
+Keep a Git clone or extracted ZIP in a permanent writable directory because installed
+hooks refer to that source. Do not overwrite an existing destination.
 
 ```powershell
 git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git C:\path\to\harness_codex
-```
-
-```bash
-git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git /path/to/harness_codex
-```
-
-You can also choose **Download ZIP** from that public repository and extract it into a
-permanent directory named `harness_codex`. Hooks refer to that directory after
-installation, so do not install from a temporary attachment viewer. If the destination
-already exists, inspect it and choose another destination instead of overwriting it.
-
-From PowerShell:
-
-```powershell
 cd C:\path\to\harness_codex
-python scripts\onboard.py
-python scripts\onboard.py --apply
-python scripts\setup-check.py
+python scripts/onboard.py
+python scripts/onboard.py --apply
+python scripts/setup-check.py
 ```
 
-From macOS using Bash:
+On macOS, use the same sequence with a POSIX path and `python3`.
 
-```bash
-cd /path/to/harness_codex
-python3 scripts/onboard.py
-python3 scripts/onboard.py --apply
-python3 scripts/setup-check.py
-```
+The first onboarding command checks prerequisites and previews targets without writing.
+`--apply` installs for the current user into `CODEX_HOME`, or `~/.codex` by default.
 
-The first onboarding command checks prerequisites and previews the target without
-changing it. `--apply` performs the installation. If PyYAML is unavailable, onboarding
-creates a repository-local `.runtime` virtual environment; it does not modify global
-Python packages. No administrator or sudo access is required.
-Onboarding and both platform installers share runtime selection, including later sync
-and bootstrap calls. Status checks use the recorded installation interpreter for hook
-verification, even when launched by another Python.
+On Windows, standard CPython and MSYS2 UCRT64/MINGW64 native Python are supported;
+MSYS `/usr/bin/python` is POSIX and cannot run the native Windows hook contract.
 
-On Windows, standard CPython and MSYS2 UCRT64/MINGW64 native Windows Python are
-supported. Their private venv executables may live in `Scripts/python.exe` or
-`bin/python.exe`; installation detects and validates the existing layout. Use
-PowerShell for the Windows wrapper. MSYS `/usr/bin/python` is a POSIX runtime and
-cannot be used as the interpreter for native Windows hook commands. If it appears
-first on PATH, run `powershell -NoProfile -ExecutionPolicy Bypass -File
-scripts/install-windows.ps1 -Preview`, then the same command without `-Preview`.
-The wrapper skips POSIX candidates and looks for a native Python already on PATH.
+After installation, review changed hook definitions in the host hook UI (`/hooks` where supported)
+and reopen the session if needed. Check installation, trust, and observed hook delivery separately.
 
-The installer targets the current user's `~/.codex`, or `CODEX_HOME` when set. It:
+## Update and recovery
 
-- Merges its managed policy block into `AGENTS.md` and preserves other instructions.
-- Installs the skills listed in [SKILLS.md](SKILLS.md), backing up replaced managed paths.
-- Merges native hook definitions and records a content-hash baseline for drift checks.
-- Leaves unrelated skills, system skills, SSH configuration, Codex configuration,
-  authentication, providers, permissions and model choices under the user's control.
+For a clean Git clone, run `scripts/sync.ps1` on Windows or `bash scripts/sync.sh` on
+macOS, then run `setup-check.py`. Sync requires the source directory to be the exact Git
+root, refuses a dirty tree, and uses its existing tracking branch. A ZIP has no update
+history; clone the public repository into a new permanent directory instead.
 
-Existing files at shipped skill paths are backed up and replaced. Do not install two
-harness variants into the same `CODEX_HOME` unless replacing their overlapping skills
-and hooks is intentional. `CODEX_HOME` and its ancestors must be real directories;
-linked paths are refused. On macOS, resolve `/var` and `/tmp` aliases to `/private/...`
-when supplying temporary test paths.
-
-Review changed hook definitions in Codex's hook UI (`/hooks` where supported), then open
-a new session if needed. A clean setup check proves installed bytes and configuration.
-It does not prove hook trust, host event delivery or model-visible context.
-
-For an install request that another user can give directly to Codex, see
-[START-HERE.md](START-HERE.md).
-
-## Use the workflow
-
-Ask Codex to use an installed skill such as `dev-setup status`, `dev-setup project-init`,
-`doctor`, `codebase-wiki`, `knowledge-fragment` or `research-kb`. The policy keeps work
-scoped to an accepted unit, verifies behavior against source and runnable checks, and
-records durable reasoning in the appropriate project layer.
-
-To add the knowledge workflow to an existing project, preview first and then apply:
-
-```text
-python scripts/init-knowledge.py /absolute/path/to/project --hooks
-python scripts/init-knowledge.py /absolute/path/to/project --hooks --apply
-```
-
-The initializer creates only missing files. Existing project files and hook definitions
-are preserved. The agent owns semantic capture and distillation; scripts validate,
-apply and archive selected records. Hooks can preserve a written handoff, but cannot
-reconstruct decisions that were never recorded. See
-[docs/KNOWLEDGE-WORKFLOW.md](docs/KNOWLEDGE-WORKFLOW.md).
-
-Optional native role routing reads project choices first and recipient-owned global
-choices second. Installation creates neither mapping. Managed launches still require a
-fresh catalog and source attestation. See
-[docs/NATIVE_AGENT_CONTRACT.md](docs/NATIVE_AGENT_CONTRACT.md).
-
-## Update
-
-For a clean Git checkout, run the platform sync wrapper from the repository root:
-
-```powershell
-.\scripts\sync.ps1
-python scripts\setup-check.py
-```
-
-```bash
-bash scripts/sync.sh
-python3 scripts/setup-check.py
-```
-
-Before syncing, inspect the checkout's configured remote and tracking branch:
-
-```text
-git remote -v
-git branch --show-current
-git rev-parse --abbrev-ref --symbolic-full-name '@{u}'
-```
-
-Sync refuses a dirty working tree, pulls the current branch's configured tracking remote
-and branch with `--ff-only`, and applies the installer. It does not run setup-check.
-The source directory must itself be the Git root; extracting a ZIP inside another
-checkout does not make that ZIP updatable. After rollback, sync uses the state's
-`update_repo` checkout while status checks use its restored `source_repo`.
-If the checkout tracks a fork or another custom source, report that source and leave its
-remote unchanged; sync uses the configured tracking source. Run the shown setup check
-afterward to verify the local installed state. The normal check is offline and prints the
-canonical public repository while stating that its latest revision was not checked. To
-request a public comparison, run this separately from the repository root:
-
-```powershell
-python scripts\setup-check.py --check-updates
-```
-
-```bash
-python3 scripts/setup-check.py --check-updates
-```
-
-That opt-in comparison asks the canonical `main` ref for its current tip and compares it
-with the checkout's root `HEAD`. It reports equal, different or unknown; it does not claim
-that either commit is an ancestor of the other.
-
-To move a ZIP installation to the public Git source, keep the extracted directory intact
-and clone into a new destination, then install from the clone:
-
-```powershell
-git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git C:\path\to\harness_codex-git
-Set-Location C:\path\to\harness_codex-git
-python scripts\onboard.py
-python scripts\onboard.py --apply
-python scripts\setup-check.py
-```
-
-```bash
-git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git /path/to/harness_codex-git
-cd /path/to/harness_codex-git
-python3 scripts/onboard.py
-python3 scripts/onboard.py --apply
-python3 scripts/setup-check.py
-```
-
-Do not re-initialize the ZIP directory as Git, overwrite an existing destination, or
-retarget a fork/custom remote automatically. A ZIP has no Git history, so its local
-setup-check remains available while its public update comparison is unknown.
-
-The repository display name is `harness_codex`. Versioned ZIP names, installed state
-files and internal community namespaces retain their existing names so upgrades can
-recognize earlier installations.
-
-## Roll back or uninstall
-
-Recovery is preview-first. Supply the user's home directory, this repository directory
-and the current platform:
+Recovery is preview-first:
 
 ```text
 python scripts/install.py rollback --home USER_HOME --repo THIS_FOLDER --platform windows
 ```
 
-Use `mac` on macOS and add `--apply` only after reviewing the plan. Replace `rollback`
-with `uninstall` to restore the baseline before all recorded installs. Recovery refuses
-targets changed after installation. Edits made between upgrades can require rolling back
-one version at a time. There is no force-overwrite recovery mode.
+Use `mac` on macOS, add `--apply` after reviewing the plan, or replace `rollback` with
+`uninstall` to restore the recorded baseline. Recovery refuses changed targets and has
+no force-overwrite mode. See [START-HERE.md](START-HERE.md) for version-by-version and
+preserved-source details.
 
-Rollback activates the prior preserved source for hook execution without resetting the
-working checkout. Keep the recorded Python runtime available; its binaries are not
-included in source recovery. The sync skill uses the retained update checkout afterward.
+## Documentation
 
-Recovery snapshots remain local under `CODEX_HOME` and may contain original file bytes;
-do not publish them. See [START-HERE.md](START-HERE.md) for the full recovery boundary.
+- [START-HERE.md](START-HERE.md) — receiver installation and recovery procedure
+- [SKILLS.md](SKILLS.md) — installed skill catalog
+- [BOOTSTRAP.md](BOOTSTRAP.md) — project bootstrap overview
+- [docs/KNOWLEDGE-WORKFLOW.md](docs/KNOWLEDGE-WORKFLOW.md) — knowledge lifecycle
+- [docs/NATIVE_AGENT_CONTRACT.md](docs/NATIVE_AGENT_CONTRACT.md) — optional role routing
+- [docs/PACKAGING.md](docs/PACKAGING.md) — distribution boundary and measured validation
+- [NOTICE.md](NOTICE.md) — attribution and current license status
 
-## Develop and package
+## Maintainer checks
 
 ```text
 python scripts/lint.py
@@ -222,9 +226,5 @@ python -m unittest discover -s tests
 python scripts/package.py
 ```
 
-Packaging writes a deterministic ZIP and SHA-256 sidecar under `dist/`. The allowlist
-excludes Git history, the repository-only pre-commit hook, caches, logs, runtime state,
-account data and private notes. See [docs/PACKAGING.md](docs/PACKAGING.md) for the measured
-validation record and [NOTICE.md](NOTICE.md) for attribution and current license status.
-
-Official skill format reference: https://developers.openai.com/codex/skills
+Packaging writes the versioned ZIP and SHA-256 sidecar under `dist/`. Release evidence is
+revision-specific; rebuild and recheck the archive after documentation changes.
