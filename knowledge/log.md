@@ -35,3 +35,9 @@
 ## [2026-09-11] lint | Final kb-lint passed with four content pages and zero issues; no unconsolidated maintenance deltas remain.
 
 ## [2026-09-11] publish | User authorized publication followed by personal-harness adaptation. Pushed maintenance implementation 6e9235cb8ec1cef42d5ed8d2d484b224524339a1 and verified matching local HEAD, origin/main and live remote main. Community installation remains separate from the personal harness.
+
+## [2026-09-11] decision | Consolidated recipient MSYS2 scope and actual UCRT bin-layout reproduction into maintenance-reliability. Preserved cross-caller reuse, pre-import link validation and the native-Windows versus POSIX runtime distinction. Final 0.1.3 acceptance remains pending in the active plan.
+
+## [2026-09-11] verify | Frozen 0.1.3 source passed 73 tests in 227.062 seconds with 102 unchanged code/test inputs, including actual UCRT checks. Mixed POSIX/native PATH installation from the real package index and repeat installation passed. Independent link/ambiguity guards passed under both runtimes; committed ZIP and publication verification remain the release gate.
+
+## [2026-09-11] close | Canonical candidate ZIP passed real dependency installation and setup-check command probes under Windows CPython and MSYS2 UCRT. Closed implementation working state and preserved the existing deep-Windows-path limitation, prior failed fixture and exact evidence pointers. Final publication requires an unchanged-code ZIP rebuild and independent artifact acceptance; installed community files remain separate from the personal profile.

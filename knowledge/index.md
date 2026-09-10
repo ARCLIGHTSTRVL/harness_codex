@@ -7,7 +7,7 @@
 - [[public-source-connection]] — explicit public source discovery, offline installation
   checks, optional revision comparison and preservation of recipient fork remotes.
 - [[maintenance-reliability]] — reproduced update/recovery failures, preserved execution
-  source, runtime identity and user-edit protection across repeated recovery.
+  source, runtime identity, MSYS2 venv layouts and user-edit protection across recovery.
 
 ## Journal
 

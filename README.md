@@ -66,6 +66,15 @@ Onboarding and both platform installers share runtime selection, including later
 and bootstrap calls. Status checks use the recorded installation interpreter for hook
 verification, even when launched by another Python.
 
+On Windows, standard CPython and MSYS2 UCRT64/MINGW64 native Windows Python are
+supported. Their private venv executables may live in `Scripts/python.exe` or
+`bin/python.exe`; installation detects and validates the existing layout. Use
+PowerShell for the Windows wrapper. MSYS `/usr/bin/python` is a POSIX runtime and
+cannot be used as the interpreter for native Windows hook commands. If it appears
+first on PATH, run `powershell -NoProfile -ExecutionPolicy Bypass -File
+scripts/install-windows.ps1 -Preview`, then the same command without `-Preview`.
+The wrapper skips POSIX candidates and looks for a native Python already on PATH.
+
 The installer targets the current user's `~/.codex`, or `CODEX_HOME` when set. It:
 
 - Merges its managed policy block into `AGENTS.md` and preserves other instructions.

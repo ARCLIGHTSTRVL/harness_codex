@@ -12,6 +12,11 @@ MIN_VERSION = (3, 11)
 NAME_SURROGATE = 0x20000000
 PROBE_MARKER = "DEV_SETUP_RUNTIME_PROBE="
 PROBE_TIMEOUT = 15
+RUNTIME_EXECUTABLES = (
+    (Path("Scripts/python.exe"), False),
+    (Path("bin/python.exe"), False),
+    (Path("bin/python"), True),
+)
 
 
 def _absolute(path):
@@ -49,8 +54,7 @@ def _validate_path_chain(path, label):
         _lstat(current, label, "directory")
 
 
-def _validate_runtime_tree(runtime):
-    scripts = runtime / ("Scripts" if os.name == "nt" else "bin")
+def _validate_runtime_tree(runtime, scripts):
     pending = [runtime]
     while pending:
         current = pending.pop()
@@ -88,16 +92,20 @@ def probe_python(executable):
     executable = _absolute(executable)
     source = (
         "import json,os,sys\n"
-        "try:\n"
-        " import yaml\n"
-        " has_yaml=True\n"
-        "except Exception:\n"
+        "if sys.platform=='cygwin':\n"
         " has_yaml=False\n"
+        "else:\n"
+        " try:\n"
+        "  import yaml\n"
+        "  has_yaml=True\n"
+        " except Exception:\n"
+        "  has_yaml=False\n"
         f"print({PROBE_MARKER!r}+json.dumps({{"
         "'executable':os.path.abspath(sys.executable),"
         "'prefix':os.path.abspath(sys.prefix),"
         "'base_prefix':os.path.abspath(sys.base_prefix),"
-        "'version':list(sys.version_info[:3]),'has_yaml':has_yaml}))"
+        "'version':list(sys.version_info[:3]),'has_yaml':has_yaml,"
+        "'os_name':os.name,'sys_platform':sys.platform}))"
     )
     try:
         result = subprocess.run(
@@ -130,13 +138,51 @@ def probe_python(executable):
     return probe
 
 
+def _require_native_runtime(probe):
+    if probe["sys_platform"] == "cygwin":
+        raise RuntimeError(
+            "MSYS POSIX Python cannot install native Windows hooks; "
+            "use UCRT64/MINGW64 Python or standard Windows Python"
+        )
+
+
 def validate_python(executable, require_yaml=True):
     probe = probe_python(executable)
+    _require_native_runtime(probe)
     if probe["version"] < MIN_VERSION:
         raise RuntimeError(f"Python 3.11+ is required: {probe['executable']}")
     if require_yaml and not probe["has_yaml"]:
         raise RuntimeError(f"PyYAML is unavailable: {probe['executable']}")
     return Path(probe["executable"])
+
+
+def _runtime_executable(runtime):
+    found = []
+    for relative, posix_link in RUNTIME_EXECUTABLES:
+        candidate = runtime / relative
+        try:
+            os.lstat(candidate)
+        except FileNotFoundError:
+            continue
+        except OSError as exc:
+            raise RuntimeError(
+                f".runtime interpreter could not be inspected ({type(exc).__name__}: {exc})"
+            ) from exc
+        found.append((candidate, posix_link))
+    if not found:
+        expected = ", ".join(path.as_posix() for path, _ in RUNTIME_EXECUTABLES)
+        raise RuntimeError(f".runtime interpreter is missing; expected one of: {expected}")
+    if len(found) != 1:
+        names = ", ".join(path.relative_to(runtime).as_posix() for path, _ in found)
+        raise RuntimeError(f".runtime interpreter is ambiguous: {names}")
+    executable, posix_link = found[0]
+    scripts = executable.parent
+    _lstat(scripts, ".runtime interpreter directory", "directory")
+    _lstat(
+        executable, ".runtime interpreter", "file",
+        allow_symlink=posix_link and os.name != "nt",
+    )
+    return scripts, executable
 
 
 def _runtime_python(repo):
@@ -145,13 +191,11 @@ def _runtime_python(repo):
         return runtime, None
     _lstat(runtime, ".runtime", "directory")
     config = runtime / "pyvenv.cfg"
-    scripts = runtime / ("Scripts" if os.name == "nt" else "bin")
-    executable = scripts / ("python.exe" if os.name == "nt" else "python")
     _lstat(config, ".runtime/pyvenv.cfg", "file")
-    _lstat(scripts, ".runtime interpreter directory", "directory")
-    _lstat(executable, ".runtime interpreter", "file", allow_symlink=os.name != "nt")
-    _validate_runtime_tree(runtime)
+    scripts, executable = _runtime_executable(runtime)
+    _validate_runtime_tree(runtime, scripts)
     probe = probe_python(executable)
+    _require_native_runtime(probe)
     if probe["version"] < MIN_VERSION:
         raise RuntimeError(f".runtime requires Python 3.11+: {executable}")
     if not _same_lexical_path(probe["prefix"], runtime):
@@ -168,6 +212,7 @@ def select_python(repo, apply=False, executable=None):
         base_probe = runtime_probe
     else:
         base_probe = probe_python(base)
+    _require_native_runtime(base_probe)
     if base_probe["version"] < MIN_VERSION:
         raise RuntimeError(f"Python 3.11+ is required: {base}")
     active_environment = not _same_lexical_path(base_probe["prefix"], base_probe["base_prefix"])

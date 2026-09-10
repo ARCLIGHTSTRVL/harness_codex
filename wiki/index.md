@@ -85,3 +85,22 @@ knowledge/comparisons/maintenance-reliability.md.
 
 Source recovery does not preserve interpreter binaries, establish host trust or prove
 native host event delivery. Packaging and platform acceptance remain in docs/PACKAGING.md.
+
+## MSYS2 runtime layouts (0.1.3)
+
+- `scripts/runtime.py:_runtime_executable` discovers the runtime's actual layout from
+  Scripts/python.exe, bin/python.exe and POSIX bin/python. It rejects multiple
+  candidates before executing an interpreter. `_runtime_python` validates the
+  selected directory, full runtime tree and returned environment prefix.
+- `scripts/runtime.py:select_python` uses the same discovered runtime when callers
+  change between standard Windows CPython and native MSYS2 Python. Platform-native
+  hook installation excludes the cygwin POSIX runtime.
+- `scripts/install-windows.ps1` distinguishes native Windows candidates from MSYS
+  POSIX Python before resolving its executable as a Windows path.
+- `tests/test_msys_runtime.py` covers bin layout, ambiguous layout, Windows selection
+  and opt-in actual UCRT installation and cross-caller reuse. Set MSYS2_UCRT_PYTHON to
+  an installed UCRT interpreter to exercise the actual-runtime checks.
+
+This extends the maintenance runtime contract without changing recovery state or pip
+destination rules. See knowledge/comparisons/maintenance-reliability.md for the
+recipient reproduction and docs/PACKAGING.md for exact measured acceptance.

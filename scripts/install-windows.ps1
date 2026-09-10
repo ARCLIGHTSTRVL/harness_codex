@@ -36,20 +36,33 @@ $env:Path = $env:Path + ';' + [Environment]::GetEnvironmentVariable('Path','Mach
 # templates/hooks/stop-handoff-gate.sh and scripts/install-mac.sh.
 # The Git gate also checks managed Homebrew paths for bare SSH environments.
 $pyCmd = $null
-foreach ($candidate in @('python','python3','py')) {
-    if (-not (Get-Command $candidate -ErrorAction SilentlyContinue)) { continue }
-    try {
-        $versionText = (& $candidate -c "import sys; print(int(sys.version_info >= (3, 11)))" 2>$null)
-        if($LASTEXITCODE -eq 0 -and ($versionText | Select-Object -Last 1).Trim() -eq '1') {
-            $resolvedCandidate = (& $candidate -c "import sys; print(sys.executable)" 2>$null)
-            if($LASTEXITCODE -eq 0 -and $resolvedCandidate) {
-                $pyCmd = [System.IO.Path]::GetFullPath(($resolvedCandidate | Select-Object -Last 1).Trim())
-                break
+$sawMsysPosix = $false
+:pythonCandidates foreach ($candidate in @('python','python3','py')) {
+    $commands = @(Get-Command $candidate -All -CommandType Application,ExternalScript -ErrorAction SilentlyContinue)
+    foreach ($command in $commands) {
+        try {
+            $versionText = (& $command.Source -c "import sys; print(int(sys.version_info >= (3, 11)))" 2>$null)
+            if($LASTEXITCODE -eq 0 -and ($versionText | Select-Object -Last 1).Trim() -eq '1') {
+                $runtimeKind = (& $command.Source -c "import os,sys; print(os.name + ':' + sys.platform)" 2>$null)
+                if($LASTEXITCODE -eq 0 -and ($runtimeKind | Select-Object -Last 1).Trim() -eq 'posix:cygwin') {
+                    $sawMsysPosix = $true
+                    Write-Host "Skipping MSYS POSIX Python candidate '$($command.Source)'; native Windows Python is required for hooks." -ForegroundColor Yellow
+                    continue
+                }
+                $resolvedCandidate = (& $command.Source -c "import sys; print(sys.executable)" 2>$null)
+                if($LASTEXITCODE -eq 0 -and $resolvedCandidate) {
+                    $pyCmd = [System.IO.Path]::GetFullPath(($resolvedCandidate | Select-Object -Last 1).Trim())
+                    break pythonCandidates
+                }
             }
-        }
-    } catch { }
+        } catch { }
+    }
 }
 if (-not $pyCmd) {
+    if($sawMsysPosix) {
+        Write-Host "MSYS POSIX Python cannot install native Windows hooks. Add UCRT64/MINGW64 Python or standard Windows Python to PATH and retry." -ForegroundColor Red
+        exit 1
+    }
     Write-Host "Python 3.11+ not found/runnable (tried: python, python3, py). Install Python 3.11+ and retry." -ForegroundColor Red
     exit 1
 }

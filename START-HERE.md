@@ -41,6 +41,12 @@ overwrite an existing destination or change a fork/custom remote automatically.
    a temporary attachment viewer. Installation scripts and hooks refer to this folder.
 2. Use Python 3.11+ and Git. Windows needs Git Bash for project hook templates.
    If Python is unavailable, install it using the platform's trusted installer first.
+   Standard Windows Python and MSYS2 UCRT64/MINGW64 native Python are supported.
+   For MSYS2, use its native environment's Python, not MSYS `/usr/bin/python`.
+   Private runtime discovery accepts both `Scripts/python.exe` and `bin/python.exe`.
+   If PATH selects MSYS POSIX Python first, use `scripts/install-windows.ps1 -Preview`
+   from PowerShell, then rerun without `-Preview`. The wrapper searches for an already
+   installed native Python on PATH; it does not install another global interpreter.
 3. From this folder, run `python scripts/onboard.py` (`python3` on macOS as needed).
    This checks prerequisites and prints the installation targets without changing them.
 4. Run `python scripts/onboard.py --apply`. If PyYAML is missing, this creates a private

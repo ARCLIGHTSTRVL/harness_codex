@@ -27,3 +27,5 @@
 ## [2026-09-11] lint | Final wiki lint retained seven medium documentation-coverage advisories and no blocking finding. The contract index was refreshed; comprehensive page coverage remains separate maintenance work.
 
 ## [2026-09-11] publish | Bound the maintenance contract section to published implementation 6e9235c after local/tracking/live-remote ref equality. No behavioral code changed during documentation closeout.
+
+## [2026-09-11] refresh | Added explicitly uncommitted 0.1.3 runtime-layout contracts from current source, preserving prior recovery and pip boundaries. Actual UCRT and CPython guards reject linked paths and ambiguous layouts before probing. Final package acceptance remains separate.

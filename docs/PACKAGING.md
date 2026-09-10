@@ -1,5 +1,57 @@
 # Community distribution contract
 
+## Version 0.1.3 Windows and MSYS2 acceptance
+
+The shared runtime helper accepts standard Windows `Scripts/python.exe`, native MSYS2
+`bin/python.exe` and the existing POSIX `bin/python` venv layout. Selection validates
+the actual runtime tree and prefix, rejects ambiguous candidates before probing, and
+preserves dependency confinement. The Windows wrapper examines every external command
+candidate on PATH, skipping MSYS POSIX Python in favor of an available native Python.
+Direct MSYS `/usr/bin/python` is not a native Windows hook interpreter and is refused
+before onboarding writes; recipients use UCRT64/MINGW64 or standard Windows Python.
+
+The published 0.1.2 ZIP failed with actual MSYS2 UCRT Python 3.14.7 because it expected
+`.runtime/Scripts` after venv had created `.runtime/bin`. The corrected source passed
+all 73 tests on Windows CPython 3.11.9 in 227.062 seconds, with the actual UCRT tests
+enabled through MSYS2_UCRT_PYTHON. All 102 pinned code/test inputs remained unchanged.
+The five new regressions cover bin layout, ambiguity, a POSIX PATH shadow, and reuse
+in both directions between CPython and UCRT. Existing recovery and preservation
+regressions remain in the full suite.
+
+An actual mixed PATH with MSYS POSIX Python before UCRT passed the PowerShell installer,
+built and installed PyYAML 6.0.3 from the default package index into the private runtime,
+passed setup-check under ordinary CPython, and passed repeat installation. This network
+check complements the offline-wheel regression fixtures. Independent review rechecked
+five link/ambiguity guards under each runtime, all refusing before any interpreter
+probe. Source lint and secrets checks passed; knowledge lint reported four content
+pages and zero issues, while wiki lint retained seven medium coverage advisories.
+
+Raw source receipts are excluded under `dist/review/msys2/`: `verification.json`,
+`frozen-mixed-pypi-green.log`, `integration/unittest.log`, `integration/tested-code.json`
+and the independent review guard receipts. The release gate additionally builds from
+the committed source and exercises the extracted ZIP in isolated profiles before push.
+The final ZIP's adjacent SHA-256 sidecar identifies the delivered bytes. This follow-up
+does not establish actual macOS execution, native hook trust or host event delivery.
+
+Canonical Git checkout packaging produced a 134-entry candidate archive. Actual
+extracted-ZIP installation from a no-PyYAML Windows CPython base and from native
+MSYS2 UCRT both installed their dependencies from the default package index and
+passed `setup-check --probe-hooks`, each with exit 0. Saved interpreter paths matched
+the respective Scripts/bin runtime, recovery stayed inside the isolated profile, and
+the portable MSYS2 tree remained unchanged. The excluded receipt is
+`dist/review/msys2/publication/a2/receipt.json`. Git CRLF normalization affects the
+three PowerShell wrapper files relative to committed LF blobs; normalized content
+matched exactly. Final documentation changes require a fresh ZIP and unchanged
+product-code comparison before final artifact validation and publication.
+
+The first artifact fixture used an excessively deep profile: a recovery snapshot
+entry reached 263 characters and Windows refused inspection before state creation.
+The identical archive passed using a shorter isolated profile. This release does
+not remove the existing Windows path-depth limit; ordinary-depth profile paths were
+verified. The failed run and its exact path remain in the excluded publication logs.
+
+## Distribution boundary
+
 During the initial standalone packaging phase on 2026-09-10, the owner requested a new
 project under C:/dev containing a general-purpose distribution, and the upstream checkout
 remained unchanged. The package retains workflow skills, native

@@ -6,6 +6,8 @@ consolidates:
   - 01a08c02-e8e2-7b32-afab-122e85dc0334-005
   - 01a08c02-e8e2-7b32-afab-122e85dc0334-006
   - 01a08c02-e8e2-7b32-afab-122e85dc0334-007
+  - 01a08c02-e8e2-7b32-afab-122e85dc0334-008
+  - 01a08c02-e8e2-7b32-afab-122e85dc0334-009
 title: Reliable updates and recovery of execution source
 created: 2026-09-11
 updated: 2026-09-11
@@ -157,3 +159,59 @@ out, leaving actual macOS execution for the next platform-validation unit. Windo
 and Git Bash execution do not close that gap. The implementation's local HEAD,
 origin/main and live remote main matched after push. Personal installation remains
 separate; the community bundle was not applied over the installed personal harness.
+
+## MSYS2 recipient compatibility in 0.1.3
+
+A recipient of the downloaded community bundle reported an installation failure with
+MSYS2 Python. The exact original command and error text were unavailable, so a missing
+MSYS2 installation on the maintainer's computer could neither confirm nor dismiss
+the report. An official portable MSYS2 environment was prepared in an excluded test
+directory, without changing global Python, PATH, packages or the real user profile.
+
+The published 0.1.2 ZIP failed through its real PowerShell installer with UCRT Python
+3.14.7. This interpreter reports os.name nt and sys.platform win32, yet creates
+.runtime/bin/python.exe. The installer expected .runtime/Scripts solely from the
+calling interpreter's os.name and stopped after creating the venv, before installation
+state existed. The official MSYS2 Python documentation also describes its bin-based
+venv layout: https://www.msys2.org/docs/python/.
+
+The repair discovers an existing interpreter from the supported layout candidates,
+then validates its directory, runtime tree and actual environment prefix before
+reusing it. Multiple candidate layouts are refused rather than selecting whichever
+appears first. A runtime created by Windows CPython must remain usable when the next
+caller is native MSYS2 Python, and the reverse must also work. Merely special-casing
+the current caller as MSYS2 was rejected because it would break this cross-caller case.
+Removing link validation was rejected: layout compatibility must preserve the existing
+pre-import boundary and confined dependency installation.
+
+Native UCRT64/MINGW64 Python and MSYS POSIX Python are distinct. The latter reports
+cygwin and an executable under /usr/bin, whose path and process conventions cannot
+serve as native Windows hook commands. This unit supports native Windows interpreters;
+it does not claim POSIX path translation or native host dispatch from MSYS Python.
+The recipient-facing instructions identify the required environment. Actual acceptance
+and remaining platform coverage are recorded in docs/PACKAGING.md; historical 0.1.2
+checks above are not evidence for the changed 0.1.3 artifact.
+
+The frozen 0.1.3 source passed 73 tests in 227.062 seconds under Windows CPython 3.11.9
+with actual UCRT tests enabled, and all 102 pinned inputs were unchanged. A separate
+real package-index run built PyYAML 6.0.3, installed successfully with POSIX Python
+shadowing UCRT on PATH, passed a CPython status check and then passed reinstall.
+Independent guard checks passed five cases under each native runtime before any
+probe executed. These results establish the reproduced fix and preservation boundaries;
+committed ZIP verification is a separate publication gate. Raw excluded receipts and
+the exact remaining platform limitations are cataloged in docs/PACKAGING.md.
+
+Review also found that skipping POSIX Python by command name alone was insufficient:
+the first PATH match for both python and python3 could still hide an available native
+Python farther down PATH. The Windows wrapper therefore inspects all external-command
+matches in its existing name order. A real MSYS POSIX-before-UCRT installation passed.
+It does not download or silently configure another global interpreter.
+
+The canonical candidate ZIP then passed real dependency installation and
+setup-check --probe-hooks under both native families, with saved runtime paths matching
+and the shared portable MSYS2 tree unchanged. A first, deeply nested test profile hit
+Windows's existing path-depth limit at a 263-character recovery entry before state
+creation; rerunning the identical archive at a shorter depth passed. Shortening the
+fixture was appropriate to isolate the runtime-family regression, but does not prove
+arbitrarily deep recipient paths work. The failed evidence is retained, and general
+long-path support remains outside this compatibility fix.
