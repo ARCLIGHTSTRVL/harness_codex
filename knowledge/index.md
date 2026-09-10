@@ -4,6 +4,8 @@
 
 - [[portable-distribution]] — distribution scope, semantic ownership, recipient-owned
   role choices, unit context policy, recovery alternatives and preservation across upgrades.
+- [[public-source-connection]] — explicit public source discovery, offline installation
+  checks, optional revision comparison and preservation of recipient fork remotes.
 
 ## Journal
 

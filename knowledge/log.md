@@ -21,3 +21,7 @@
 ## [2026-09-10] publish | Recorded the user-directed repository rename to `harness_codex` and public visibility. Compatibility-sensitive package, state and routing names remain unchanged, and public availability does not select a license.
 
 ## [2026-09-10] lint | kb-lint passed with 2 content pages and 0 issues after publication closeout.
+
+## [2026-09-11] decision | Added public-source-connection: public repository identity belongs in distribution metadata; local content agreement, public revision equality and native host delivery remain separate evidence. Preserved existing fork tracking and documented ZIP migration.
+
+## [2026-09-11] verify | Public-source code and skill integration passed the required Windows suite and an actual temporary-profile installation plus offline/online setup checks. docs/PACKAGING.md records measured results and local receipt paths; publication and user-profile installation remain separate actions.

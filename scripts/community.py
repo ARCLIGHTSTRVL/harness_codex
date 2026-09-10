@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+from scripts.public_source import report as public_source_report
+
 ROOT = Path(__file__).resolve().parents[1]
 STATE_NAME = "dev-setup-codex-community-state.json"
 SOURCE_ROOTS = ("codex", "skills", "scripts", "templates", "VERSION")
@@ -76,7 +78,7 @@ def findings(sc, home, repo, platform=None, hooks=True, probe=False):
         return ["installation cannot be verified: " + str(exc)]
 
 
-def status(sc, home, repo, hooks=True, probe=False):
+def status(sc, home, repo, hooks=True, probe=False, check_updates=False):
     issues = findings(sc, home, repo, hooks=hooks, probe=probe)
     for issue in issues:
         print("Drift: " + issue)
@@ -84,4 +86,7 @@ def status(sc, home, repo, hooks=True, probe=False):
         print("In sync: community source and installed content match")
     print("Hook trust and host event delivery are unverified." if hooks
           else "Hook configuration was not checked.")
-    return int(bool(issues))
+    public_lines, public_code = public_source_report(repo, check_updates=check_updates)
+    for line in public_lines:
+        print(line)
+    return max(int(bool(issues)), public_code)

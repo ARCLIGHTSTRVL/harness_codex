@@ -15,6 +15,26 @@ Give Codex access to the extracted folder and paste this request:
 > 내 계정, 모델 설정, 관련 없는 지침과 스킬은 보존해 줘.
 > 훅 신뢰 설정이나 Codex 재시작이 필요하면 알려 주고, 실제 실행 여부는 구분해 줘.
 
+The canonical public source is
+[public repository](https://github.com/ARCLIGHTSTRVL/harness_codex). For an
+initial Git install, clone it into a new permanent destination before following the
+receiver procedure:
+
+```powershell
+git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git C:\path\to\harness_codex
+Set-Location C:\path\to\harness_codex
+```
+
+```bash
+git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git /path/to/harness_codex
+cd /path/to/harness_codex
+```
+
+If you started from **Download ZIP** and want Git updates, leave the extracted folder in
+place and clone the public source into a new destination, then run the preview, apply and
+verification commands below from that clone. Do not run `git init` in the ZIP folder,
+overwrite an existing destination or change a fork/custom remote automatically.
+
 ## Receiver procedure
 
 1. Keep the extracted folder in a permanent, writable location. Do not install from
@@ -29,6 +49,12 @@ Give Codex access to the extracted folder and paste this request:
 5. Verify `python scripts/setup-check.py`. Review/trust exact hook definitions through
    the host's hook UI (`/hooks` where supported), then reopen a session if needed to load
    the installed skills. File verification is distinct from runtime activation.
+
+For a ZIP source, this local check does not require Git. A normal check is offline; use
+`python <repo>/scripts/setup-check.py --check-updates` only when you explicitly want to
+compare the public `main` tip with a Git checkout's root `HEAD`. The comparison reports
+equal, different or unknown and makes no ancestry claim. Keep the ZIP directory until the
+new clone's installation and hook source have been verified.
 
 An explicit request to install authorizes running the installer. Repository maintenance
 instructions do not prohibit this receiver workflow. Installation does not authorize

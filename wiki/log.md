@@ -13,3 +13,7 @@
 ## [2026-09-10] publish | Recorded the user-directed rename to `harness_codex` and public visibility without changing compatibility-sensitive package, state or routing namespaces. Public availability does not select a license.
 
 ## [2026-09-10] lint | Wiki lint completed with six medium initial-tree documentation-gap notices and no blocking issue; the current contract index intentionally pins the relevant source symbols instead of cataloging the entire implementation.
+
+## [2026-09-11] refresh | Added explicit working-tree references for public source reporting, local/remote check separation, exact URL packaging allowance and Git/ZIP skill navigation. Historical committed pins remain separate from uncommitted changes.
+
+## [2026-09-11] lint | Knowledge lint passed; wiki lint retained the six existing medium documentation-coverage advisories without a blocking finding. Current public-source contracts were checked against the working tree and required acceptance evidence.

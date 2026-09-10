@@ -23,9 +23,22 @@ Prerequisites:
 - Git
 - Git Bash on Windows for shell-based project hook templates
 
-Clone this repository using GitHub's **Code** menu, or choose **Download ZIP** there and
-extract the source into a permanent directory named `harness_codex`. Hooks refer to that
-directory after installation, so do not install from a temporary attachment viewer.
+The canonical public source is
+[public repository](https://github.com/ARCLIGHTSTRVL/harness_codex). For an
+initial Git install, clone it into a new permanent directory:
+
+```powershell
+git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git C:\path\to\harness_codex
+```
+
+```bash
+git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git /path/to/harness_codex
+```
+
+You can also choose **Download ZIP** from that public repository and extract it into a
+permanent directory named `harness_codex`. Hooks refer to that directory after
+installation, so do not install from a temporary attachment viewer. If the destination
+already exists, inspect it and choose another destination instead of overwriting it.
 
 From PowerShell:
 
@@ -110,10 +123,56 @@ bash scripts/sync.sh
 python3 scripts/setup-check.py
 ```
 
-Sync refuses a dirty working tree, pulls the existing remote and applies the installer.
-Run the shown setup check afterward to verify the installed state. For a ZIP installation,
-extract the newer source into a permanent directory, run its onboarding apply step, and
-confirm `scripts/setup-check.py` before removing an older directory referenced by hooks.
+Before syncing, inspect the checkout's configured remote and tracking branch:
+
+```text
+git remote -v
+git branch --show-current
+git rev-parse --abbrev-ref --symbolic-full-name '@{u}'
+```
+
+Sync refuses a dirty working tree, pulls the current branch's configured tracking remote
+and branch with `--ff-only`, and applies the installer. It does not run setup-check.
+If the checkout tracks a fork or another custom source, report that source and leave its
+remote unchanged; sync uses the configured tracking source. Run the shown setup check
+afterward to verify the local installed state. The normal check is offline and prints the
+canonical public repository while stating that its latest revision was not checked. To
+request a public comparison, run this separately from the repository root:
+
+```powershell
+python scripts\setup-check.py --check-updates
+```
+
+```bash
+python3 scripts/setup-check.py --check-updates
+```
+
+That opt-in comparison asks the canonical `main` ref for its current tip and compares it
+with the checkout's root `HEAD`. It reports equal, different or unknown; it does not claim
+that either commit is an ancestor of the other.
+
+To move a ZIP installation to the public Git source, keep the extracted directory intact
+and clone into a new destination, then install from the clone:
+
+```powershell
+git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git C:\path\to\harness_codex-git
+Set-Location C:\path\to\harness_codex-git
+python scripts\onboard.py
+python scripts\onboard.py --apply
+python scripts\setup-check.py
+```
+
+```bash
+git clone https://github.com/ARCLIGHTSTRVL/harness_codex.git /path/to/harness_codex-git
+cd /path/to/harness_codex-git
+python3 scripts/onboard.py
+python3 scripts/onboard.py --apply
+python3 scripts/setup-check.py
+```
+
+Do not re-initialize the ZIP directory as Git, overwrite an existing destination, or
+retarget a fork/custom remote automatically. A ZIP has no Git history, so its local
+setup-check remains available while its public update comparison is unknown.
 
 The repository display name is `harness_codex`. Versioned ZIP names, installed state
 files and internal community namespaces retain their existing names so upgrades can

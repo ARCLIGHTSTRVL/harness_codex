@@ -1,50 +1,48 @@
 ---
-last_verified_commit: 8237426b6dfcd8810bd3b2f66d6d23021b21c684
-last_touched: 2026-09-10
+last_verified_commit: 68ec2ed8b69a71ba54324990fa51195454ef4aba
+last_touched: 2026-09-11
 writer: codex
-unit_paths: codex/AGENTS.md scripts/native_agents scripts/native-agent-contract.py tests/test_native_routing.py templates skills
+unit_paths: scripts/public_source.py scripts/setup-check.py scripts/community.py scripts/package.py tests/test_public_source.py skills/dev-setup skills/sync skills/setup-check README.md START-HERE.md BOOTSTRAP.md
 ---
 
 # NEXT
 
 ## Active Unit
 
-Goal: Closed — 0.1.2 source publication and public repository transition verified.
+Goal: Closed — public source connection implemented and locally verified.
 Current state:
-- Initial source commit `8237426b6dfcd8810bd3b2f66d6d23021b21c684` is published;
-  local `HEAD` and `origin/main` matched at that publication checkpoint.
-- The user directed the repository to be renamed `harness_codex` and made public. The
-  repository display name changes; compatibility-sensitive package and state names do not.
-- The canonical Git tree contains 123 distributed source files plus the repository-only
-  `githooks/pre-commit`. The ZIP excludes that hook and adds one synthetic seed instead.
-- Staged and tree secret checks passed. The model-name gate passed with exactly the two
-  registered historical attribution suppressions.
-- Windows reran all 33 tests in 25.143 seconds. The 124-entry publication-validation ZIP
-  has SHA-256 `f0f51f26c3d7b3718e02afd667aa09fd5a79010c72113b0a0f69fa83621ef943`.
-- The Git-only pre-commit hook is not installed into recipient hook configuration, and
-  publication does not establish native hook trust or runtime delivery.
-- Knowledge decisions and evidence limits are filed in knowledge/index.md.
+- Community lifecycle skills identify the canonical public distribution, preserve
+  existing fork tracking and document a new-clone update path for ZIP recipients.
+- Offline setup-check states its scope; --check-updates compares exact-root Git HEAD
+  with public main separately from local installation agreement.
+- The package gate permits the exact public repository URL while retaining personal-data
+  exclusions. Compatibility namespaces and installed-state schemas are unchanged.
+- Required tests and a live temporary-profile install/check passed. Full results and
+  limits are in docs/PACKAGING.md; rationale is in knowledge/comparisons/public-source-connection.md.
+- Source changes are uncommitted. The local HEAD and public main revision comparison
+  matched at the recorded validation checkpoint; it does not publish these changes.
 Blocker:
-- None. No open-source license has been selected by the publication operation.
+- None for the completed source unit.
 Pointers:
 - docs/PACKAGING.md
-- knowledge/journal/2026-09-10-distribution-readiness.md
-- `git rev-parse HEAD`
-- `git rev-parse origin/main`
-- `gh repo view --json visibility`
-- START-HERE.md
+- knowledge/comparisons/public-source-connection.md
+- wiki/index.md
+- README.md
 Acceptance:
-- The implementation source commit is reachable at `origin/main`; the repository is
-  named `harness_codex` and publicly visible.
-- Source gates, the 33-test Windows run and publication-validation ZIP build pass.
+- Public source identity is shipped in the lifecycle skills and accepted by packaging.
+- Local checks stay offline; explicit revision checks distinguish equal, different and
+  unknown without ancestry or dirty-working-tree claims.
+- Required lint/tests, temporary installation, live revision check and package build pass.
 
 ## Next Action
 
-No active source work remains. Before starting another unit, compare local `HEAD` with
-`origin/main` and use the pinned wiki references to determine whether source contracts
-changed. Rebuild the ZIP and its SHA-256 sidecar after documentation closure; the ZIP
-contains no Git history or commit pin.
+No active implementation remains. Publication requires user authorization for commit
+and push. Use the reviewed working-tree diff and current checks before publishing;
+do not replace an existing personal harness installation as part of source publication.
 
 ## Pending, Not This Unit
 
+- Commit and push of the verified public-source connection change await authorization.
+- Existing community doctor native-routing STALE and wiki coverage advisories remain
+  separate from this unit and the live session's FRESH launch attestation.
 - No open-source license has been selected.

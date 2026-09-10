@@ -9,15 +9,29 @@ import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from scripts.public_source import PUBLIC_REPOSITORY_URL
+
 TREES = ("codex", "scripts", "skills", "templates", "specs", "tests", "docs")
 FILES = ("README.md", "START-HERE.md", "BOOTSTRAP.md", "SKILLS.md", "NOTICE.md", "VERSION",
          "requirements.txt", ".gitignore", ".gitattributes", "secrets-exceptions.json",
          "model-name-exceptions.json", "AGENTS.md", "NEXT.md", "workflow/README.md",
          "knowledge/SCHEMA.md", "knowledge/index.md", "knowledge/log.md",
          "knowledge/comparisons/portable-distribution.md",
+         "knowledge/comparisons/public-source-connection.md",
          "knowledge/journal/2026-09-10-distribution-readiness.md",
          "wiki/SCHEMA.md", "wiki/index.md", "wiki/log.md", "wiki/AGENTS.md")
 ROUTING_MAPPING_NAME = "agent-routing.json"
+PERSONAL_IDENTIFIER = re.compile(r"arclights|ARCLIGHTSTRVL|C:[/\\]Users[/\\]", re.I)
+PUBLIC_URL_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_./:@-])" + re.escape(PUBLIC_REPOSITORY_URL) + r"(?:\.git)?"
+    + r"(?=$|[\s)\]}>\"'`,;])"
+)
+
+
+def has_personal_identifier(text):
+    return bool(PERSONAL_IDENTIFIER.search(PUBLIC_URL_PATTERN.sub("", text)))
 
 
 def inventory(root=ROOT):
@@ -72,7 +86,7 @@ def build(root=ROOT, output=None):
             for rule, pattern in gate.line_rules(preflight).items():
                 if pattern.search(line) and (rel, rule, hashlib.sha256(line.rstrip().encode()).hexdigest()) not in allowed:
                     raise ValueError(f"release scan blocked {rel}:{number} ({rule})")
-        if rel != "scripts/package.py" and re.search(r"arclights|ARCLIGHTSTRVL|C:[/\\]Users[/\\]", data.decode("utf-8"), re.I):
+        if rel != "scripts/package.py" and has_personal_identifier(data.decode("utf-8")):
             raise ValueError("personal identifier in " + rel)
         captured.append((rel, data))
     captured.append(("knowledge/_fragments/units.yml", (root / "templates/knowledge-units.yml").read_bytes()))

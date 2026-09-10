@@ -27,6 +27,35 @@ any user-authorized managed delegation.
 
 ## Version 0.1.2 update
 
+### Public source connection validation (2026-09-11)
+
+The public source URL and main branch are explicit metadata in scripts/public_source.py.
+Normal setup-check remains offline and checks local content; --check-updates adds a
+read-only public revision comparison. Different commits do not establish ancestry, and
+ZIP folders cannot borrow a parent checkout's revision. Sync preserves existing tracking
+configuration, with an explicit clone migration path for ZIP recipients.
+
+The package personal-identifier gate allows only the exact canonical repository URL
+token, optionally ending in .git. Other owner-name occurrences, URL suffixes and lookalikes
+remain rejected. This change adds public distribution identity, not recipient data.
+
+Validation on Windows Python 3.11: python -m unittest discover -s tests completed all
+42 tests in 35.902 seconds with OK. This includes the existing extracted-install and
+preservation suite plus the public-source regressions. Source lint, tree secrets gate,
+diff whitespace check and knowledge lint passed. Wiki lint retained its existing six
+medium documentation-coverage advisories and no blocking finding.
+
+A separate temporary profile passed actual install.py installation, offline setup-check
+and setup-check --check-updates, each with exit 0. The live public main tip and local
+HEAD were both 68ec2ed8b69a71ba54324990fa51195454ef4aba. That equality does not include
+the uncommitted source changes. Both platform wrapper sources were inspected; this new
+live installation check ran on Windows. No existing user profile was installed over.
+
+Local raw receipts are dist/validation-public-source/unittest.log and
+dist/validation-public-source/live-install-check.log, which are excluded from releases.
+The final rebuilt ZIP's SHA-256 sidecar identifies its bytes. These checks establish
+neither publication of this change nor native hook trust or host event delivery.
+
 The policy now gives an authorized unit complete relevant context, explicit acceptance,
 source-based evidence and checkpoints while excluding unrelated history. Source code
 defines implementation behavior; code-derived explanations belong in wiki and decision
@@ -54,8 +83,9 @@ The final pre-publication 33-test validation ran from a standalone source tree w
 Git history. The repository was subsequently published on `main` at
 `8237426b6dfcd8810bd3b2f66d6d23021b21c684`; local `HEAD` and `origin/main` matched,
 and visibility was verified as private at that initial checkpoint. The user then directed
-the repository to be renamed `harness_codex` and made public. No owner name or remote URL
-is package metadata, and no license is selected by this publication.
+the repository to be renamed `harness_codex` and made public. The public source URL is
+now explicit distribution metadata so recipients can locate updates; private account
+and machine data remain excluded. No license is selected by this publication.
 
 After repository initialization, source references are checked against the current
 checkout's `HEAD`. The initial commit cannot embed its own future SHA, and the packaged

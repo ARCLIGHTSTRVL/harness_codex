@@ -530,6 +530,8 @@ def main(argv=None):
                     help="skip global native hook wiring checks; this does not verify hook trust")
     ap.add_argument("--probe-hooks", action="store_true",
                     help="execute only exact owned hook commands with harmless invalid input; not host dispatch")
+    ap.add_argument("--check-updates", action="store_true",
+                    help="query the canonical public main branch and compare it with this exact checkout")
     ap.add_argument("--hash-block", metavar="FILE", type=Path,
                     help="print the custom-block hash for FILE and exit -- "
                          "the subprocess face of produce_block_hash, which "
@@ -600,7 +602,8 @@ def main(argv=None):
 
     from scripts.community import status
     return status(sys.modules[__name__], args.home, args.repo or SCRIPT_REPO,
-                  hooks=not args.skip_hooks, probe=args.probe_hooks)
+                  hooks=not args.skip_hooks, probe=args.probe_hooks,
+                  check_updates=args.check_updates)
 
 
 if __name__ == "__main__":
