@@ -1,0 +1,50 @@
+# Backups created by install scripts
+*.bak
+*.bak.*
+
+# Anything that looks like a secret
+*.pfx
+*.p12
+*.pem
+*.key
+id_rsa
+id_ed25519
+id_ecdsa
+auth.json
+*.token
+.env
+.env.*
+
+# Python build artifacts (wiki-lint.py etc. — never mirror into skills tree)
+__pycache__/
+*.pyc
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# /ask skill consultation outputs (may contain pasted diffs / context)
+.ask-artifacts/
+
+
+# Machine-local doctor timestamps / hook sentinels (freshness spine reads them;
+# never repo content)
+.codex/.last-doctor
+.codex/.last-health
+.codex/.stop-warned-*
+.codex/.compact-warned-*
+.codex/.last-matrix.json
+.codex/.matrix-lock
+.codex/.next-budget-warned-*
+suite-*.log
+
+# Local distribution output
+dist/
+
+.runtime/

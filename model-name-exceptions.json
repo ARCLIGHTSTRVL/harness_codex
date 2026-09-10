@@ -1,0 +1,12 @@
+[
+  {
+    "path": "specs/knowledge-fragment.md",
+    "sha256": "d44f112037b88f9907cc8aba6c50eb960e524a2280e2a49046a1122d57dc9cd2",
+    "reason": "historical upstream attribution, not recipient routing pins"
+  },
+  {
+    "path": "specs/knowledge-fragment.md",
+    "sha256": "3f4657b7ee2bcaf110a84f3e31e76aa83f2c9021626f65105eb6f650515fa367",
+    "reason": "historical upstream attribution, not recipient routing pins"
+  }
+]

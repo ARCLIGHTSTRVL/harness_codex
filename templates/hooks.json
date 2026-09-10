@@ -1,0 +1,44 @@
+{
+  "//": "Bootstrap hooks template. Copy to <project>/.codex/hooks.json at init, then review/trust the project-local hooks with /hooks. If the project also needs project-specific hooks, merge them into these arrays.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -lc 'bash \"$(git rev-parse --show-toplevel)/.codex/hooks/freshness-inject.sh\"'",
+            "commandWindows": "powershell -NoProfile -NonInteractive -Command \"[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); $gitBash = $env:OMO_CODEX_GIT_BASH_PATH; if ([string]::IsNullOrWhiteSpace($gitBash)) { $gitBash = Join-Path $env:ProgramFiles 'Git/bin/bash.exe' }; if (!(Test-Path -LiteralPath $gitBash -PathType Leaf)) { Write-Error 'Git Bash unavailable; hook execution UNVERIFIED'; exit 1 }; $hookRoot = & $gitBash -c 'git rev-parse --show-toplevel'; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; & $gitBash ($hookRoot + '/.codex/hooks/freshness-inject.sh'); exit $LASTEXITCODE\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -lc 'bash \"$(git rev-parse --show-toplevel)/.codex/hooks/compact-handoff-gate.sh\"'",
+            "commandWindows": "powershell -NoProfile -NonInteractive -Command \"[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); $gitBash = $env:OMO_CODEX_GIT_BASH_PATH; if ([string]::IsNullOrWhiteSpace($gitBash)) { $gitBash = Join-Path $env:ProgramFiles 'Git/bin/bash.exe' }; if (!(Test-Path -LiteralPath $gitBash -PathType Leaf)) { Write-Error 'Git Bash unavailable; hook execution UNVERIFIED'; exit 1 }; $hookRoot = & $gitBash -c 'git rev-parse --show-toplevel'; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; & $gitBash ($hookRoot + '/.codex/hooks/compact-handoff-gate.sh'); exit $LASTEXITCODE\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -lc 'bash \"$(git rev-parse --show-toplevel)/.codex/hooks/stop-handoff-gate.sh\"'",
+            "commandWindows": "powershell -NoProfile -NonInteractive -Command \"[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); $gitBash = $env:OMO_CODEX_GIT_BASH_PATH; if ([string]::IsNullOrWhiteSpace($gitBash)) { $gitBash = Join-Path $env:ProgramFiles 'Git/bin/bash.exe' }; if (!(Test-Path -LiteralPath $gitBash -PathType Leaf)) { Write-Error 'Git Bash unavailable; hook execution UNVERIFIED'; exit 1 }; $hookRoot = & $gitBash -c 'git rev-parse --show-toplevel'; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; & $gitBash ($hookRoot + '/.codex/hooks/stop-handoff-gate.sh'); exit $LASTEXITCODE\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

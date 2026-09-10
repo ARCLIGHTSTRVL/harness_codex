@@ -1,0 +1,26 @@
+#!/bin/sh
+# Clone-local protection: core.hooksPath must point to githooks.
+# An intact gate refuses unstaged enforcement-source drift. This is not tamper
+# resistance: --no-verify, redirected hooksPath, deliberate gate edits, and some
+# merge/rebase flows can bypass it. A separate tree scan covers current content,
+# not historical secrets or every bypassed commit.
+set -u
+root=$(git rev-parse --show-toplevel) || exit 2
+# Execute candidates: Windows Store Python stubs can exist without working.
+py=""
+for cand in python python3 py \
+  /opt/homebrew/opt/python@3.13/libexec/bin/python3 \
+  /usr/local/opt/python@3.13/libexec/bin/python3; do
+  command -v "$cand" >/dev/null 2>&1 || continue
+  supported=$("$cand" -c "import sys; print(int(sys.version_info >= (3, 11)))" 2>/dev/null) || continue
+  if [ "$supported" = "1" ]; then
+    py=$cand
+    break
+  fi
+done
+if [ -z "$py" ]; then
+  echo "pre-commit secrets gate: no runnable Python 3.11+ on PATH or managed Homebrew paths (failing closed)" >&2
+  exit 2
+fi
+"$py" "$root/scripts/secrets-gate.py" staged || exit $?
+exec "$py" "$root/scripts/model-name-gate.py" staged

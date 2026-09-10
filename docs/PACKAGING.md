@@ -1,0 +1,190 @@
+# Community distribution contract
+
+The owner requested a new project under C:/dev containing a general-purpose distribution.
+The upstream checkout remains unchanged. The package retains workflow skills, native
+hook adapters, safe installer primitives and project templates. Personal SSH aliases,
+CLI proxy installation, provider alignment, chosen models, account files, runtime state,
+working notes, replay fixtures and Git history are excluded.
+
+The core installer is adapted from the upstream shared Python engine. Its snapshot,
+path checks, backup allocation, policy merge and skill ownership rules are retained.
+The distribution uses a separate policy marker and state file to preserve unrelated
+policy. A content digest over scripts, skills, templates, policy and VERSION replaces
+the requirement for an upstream Git commit. Installed bytes are checked against the
+captured source before recording state. Files outside that managed scope remain owned
+by the receiving user. The baseline identifies content, not a publisher signature.
+
+The alternatives were copying the entire personal checkout, or rebuilding the installer
+from scratch. A curated distribution with the existing mutation primitives avoids
+shipping personal operational instructions while retaining the established file safety
+behavior. Automatic peer propagation is excluded because users have different machines.
+
+Installation configures hooks but cannot grant trust or prove native host delivery.
+Model/account/permission choices are never imposed. Public hosting and a license are
+separate owner decisions. Native role catalog attestation is still required before any
+user-authorized managed delegation.
+
+## Version 0.1.2 update
+
+The policy now gives an authorized unit complete relevant context, explicit acceptance,
+source-based evidence and checkpoints while excluding unrelated history. Source code
+defines implementation behavior; code-derived explanations belong in wiki and decision
+rationale in knowledge. New prose comments are limited to a stable file-purpose statement.
+Touched stale comments are corrected or removed without an unrelated comment cleanup.
+
+Delegates return status/outcome, scope/basis, checks/evidence, findings/unknowns and
+parent action. The parent checks current source before accepting a child result.
+Changes to code, requirements or dependency contracts invalidate affected evidence;
+saved prompts and handoffs cannot guarantee that context never drifts.
+
+Native routing accepts optional declared reasoning efforts and keeps supported selected
+roles usable when unrelated catalog entries change. Project choices take precedence
+over optional recipient-owned global choices in the community namespace. No model pin
+file ships, and installation never creates or replaces those choices. Invalid or linked
+explicit settings are refused; fresh attestation remains necessary. See
+docs/NATIVE_AGENT_CONTRACT.md for the exact paths and launch/report boundaries.
+
+The existing installer, recovery ownership and public-neutral package allowlist remain
+the distribution contract.
+
+### Source publication boundary
+
+The final 33-test validation ran from a standalone source tree without Git history.
+The user subsequently authorized an initial private repository on `main`, its push,
+and a personal backport. Those external actions do not change the validated package
+contract, and this document does not claim their completion. Public visibility and
+license selection remain separate decisions.
+
+After repository initialization, source references are checked against the current
+checkout's `HEAD`. The initial commit cannot embed its own future SHA, and the packaged
+ZIP deliberately omits `.git`, so the ZIP has no commit pin. Its adjacent SHA-256
+sidecar identifies archive bytes instead. Owner names and remote URLs are not source or
+package metadata.
+
+Git source includes the optional repository-only `githooks/pre-commit`. It is not
+installed into recipient hook configuration automatically and is excluded from the
+distributed ZIP. ZIP accounting remains 123 source entries plus the generated synthetic
+seed, 124 entries total.
+
+### Initial version 0.1.2 validation
+
+Windows Python 3.11 and macOS Python 3.13 each passed all 31 tests: the 19 distribution
+checks and 12 native routing/report checks, with no skips. Both platform lint runs passed.
+The distribution checks exercise actual platform installers in temporary profiles,
+repeat installation, guarded recovery, moved-source upgrades and saved handoff behavior.
+They also verify that recipient-owned global routing bytes survive installation and
+reinstallation and that no role-pin JSON is included in the ZIP.
+
+The native checks cover absent mappings, project precedence, malformed/linked overrides,
+dangling nested boundaries, allowed and scalar-only efforts, catalog compatibility,
+source/content invalidation, expiry, report injection and explicit-home isolation.
+An independent source review found no material correctness or purpose-fit defects;
+additional synthetic probes checked invalid effort lists, namespace isolation and
+completion evidence with missing, matching or conflicting effort.
+
+The initial tested archive contained 124 entries. Windows and macOS rebuilds were byte-identical,
+and the transferred ZIP hash matched before extraction. The extracted release passed
+the secret and personal-data checks. These results predate the additional package/state
+boundary corrections and are retained as the initial baseline. Current validation must
+include refusal to package a role mapping and refusal of linked state roots/ancestors.
+The final ZIP's adjacent SHA-256 file identifies the delivered artifact.
+These checks install only into temporary homes and do not prove host trust, event
+delivery, provider identity or semantic knowledge quality.
+
+### Final version 0.1.2 validation
+
+Two additional boundary checks were integrated and independently reviewed before
+delivery. The packager rejects `agent-routing.json` names case-insensitively before
+creating an archive, and native state access rejects linked roots and ancestor
+components, including Windows name-surrogate reparse points. Tests reproduce the
+previous behavior and verify refusal without changing the external target. Resolved
+normal directories remain usable; direct macOS CLI callers must resolve `/tmp` and
+`/var` aliases as documented in docs/NATIVE_AGENT_CONTRACT.md.
+
+The corrected source passed all 33 tests on Windows Python 3.11 and macOS Python 3.13:
+20 distribution tests and 13 native routing/report tests, with no skips. Both lint
+runs passed. Both platforms rebuilt the same transferred 124-entry validation ZIP
+byte-for-byte. The bounded follow-up source review passed correctness and purpose fit,
+including an actual Windows junction refusal check. This final run supersedes the
+initial 31-test acceptance for the corrected boundaries.
+
+After this run, only final results and handoff documentation change. The tested
+implementation remains byte-identical, and the delivered ZIP is rebuilt with its own
+SHA-256 sidecar. The local raw logs and hash manifests stay outside the release.
+
+## Version 0.1.1 historical validation
+
+The 0.1.1 distribution-specific suite has 19 behavioral checks. Windows Python 3.11
+and macOS Python 3.13 each passed all 19, including their real PowerShell/Bash installers.
+Run them with `python -m unittest discover -s tests -v`.
+Tests install the extracted ZIP into temporary CODEX_HOME directories, with spaces
+in source/profile paths; they do not install into either machine's normal profile.
+
+Covered: preservation of existing policy, SSH, Codex configuration, auth file bytes,
+system skills, unrelated skills and custom hooks; idempotent reinstall; installed
+skill drift and backups; corrupt-state recovery; source changes; upgrade to a different
+source directory without duplicate hooks; installed review-helper discovery; credential
+filename rejection; byte-identical ZIP rebuilds. The setup-check command and its exact
+hook-command probes also run against the temporary installation.
+
+Added coverage: read-only previews, onboarding, non-overwriting knowledge initialization,
+rollback to the previous install, uninstall to the original baseline, refusal of later
+user edits and edits between upgrades, recovery after a caught installation failure,
+and virtual-environment interpreter retention. A separate macOS smoke started without
+PyYAML, ran `onboard.py --apply`, and verified that the package-local dependency runtime
+produced an installation reported as In sync by setup-check.
+
+The knowledge fixture captures a decision with evidence, an alternative and a risk;
+queries it; generates a draft; proves untouched DRAFT apply is refused; applies an
+explicitly authored distilled page; checks provenance, archival and continued delta IDs;
+then runs kb-lint. PreCompact saves NEXT/plan state, and SessionStart(compact) emits
+that saved state after live NEXT changes. This verifies the pipeline with synthetic
+content. It does not measure a model's semantic distillation quality or host delivery.
+
+The first Windows launcher test exposed short/long path spelling differences in hook
+definitions. Canonicalizing generated command paths fixed the mismatch. A moved-release
+test exposed retained old source paths; installation now retargets only handlers that
+match the previous community baseline. On macOS, temporary /var paths must be resolved
+through /private, and versioned Homebrew Python requires its libexec/bin on PATH.
+These environment conditions are documented; link rejection has not been weakened.
+
+Correctness: the checks above pass for the exercised installer and package boundaries.
+Purpose fit: the resulting ZIP needs neither the original owner's account nor Git history,
+and contains no SSH aliases, proxy configuration, pinned models, original Git history,
+personal journals or replay fixtures. The original repository remains unchanged.
+
+Limits: the complete upstream regression suite is not claimed as revalidated. Native
+host dispatch, trust and model identity are not established by hook command probes.
+No external reviewer was invoked. Package checksums identify content but are unsigned.
+No public repository or license has been selected.
+
+## Readiness decisions and recovery boundary
+
+Version 0.1.1 restores the explicit installed-policy duty to capture consequential
+decisions as they form and consolidate them at unit boundaries. Capture must preserve
+evidence, rejected alternatives and open risks; saving a shortened reminder alone loses
+the basis for future decisions. The empty unit registry and explicit project initializer
+make the workflow usable on a recipient's project without importing personal journals.
+The agent owns meaning and distillation, matching the original harness; hooks only
+preserve saved handoff state. Adding automatic hook-time summarization was rejected:
+it would introduce a new semantic behavior and still could not recover unrecorded intent.
+See docs/KNOWLEDGE-WORKFLOW.md for the operational steps.
+
+Whole-profile restore was rejected because unrelated user instructions and configuration
+could have changed. Instead, lifecycle.py records only the original policy, hooks, state
+and managed skill targets, and checks recorded content hashes before restoration. It
+also rejects discontinuous history: an edit absorbed between two upgrades must not be
+lost in a combined uninstall. Single-version rollback preserves that intermediate state.
+Snapshots contain original bytes and stay local; they are never release inputs.
+
+Recovery cannot reconstruct the baseline of an older release without snapshots. A crash
+without complete post-install hashes requires manual inspection; a caught failure with
+a complete record can be rolled back. Restoration is per-file, not a filesystem-wide
+transaction. A concurrent edit or I/O failure can stop it after some files were restored;
+retain the journal, inspect the named failure, and retry only after resolving it. Backups
+and runtime evidence remain after uninstall. No force-overwrite option is provided.
+
+START-HERE.md supplies the recipient's installation request and environment/preview/apply
+sequence. The package must remain at its installation path because hooks reference it;
+upgrading from another directory requires running that copy's installer. No original
+owner account, proxy, model choice, SSH destination or Git history is required.

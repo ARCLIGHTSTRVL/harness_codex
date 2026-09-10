@@ -1,0 +1,21 @@
+# Default: auto-detect text and use canonical LF in commits and checkouts
+* text=auto eol=lf
+
+# Shell scripts must stay LF (would break on Mac if CRLF)
+*.sh text eol=lf
+githooks/* text eol=lf
+
+# PowerShell scripts: CRLF on Windows, LF on Mac (PowerShell handles either)
+*.ps1 text eol=crlf
+
+# Markdown / config / scripts used cross-platform: keep LF
+*.md text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+*.py text eol=lf
+*.cjs text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# SSH config files: LF for Mac compatibility
+ssh/config.* text eol=lf
