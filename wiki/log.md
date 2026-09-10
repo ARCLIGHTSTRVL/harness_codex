@@ -17,3 +17,5 @@
 ## [2026-09-11] refresh | Added explicit working-tree references for public source reporting, local/remote check separation, exact URL packaging allowance and Git/ZIP skill navigation. Historical committed pins remain separate from uncommitted changes.
 
 ## [2026-09-11] lint | Knowledge lint passed; wiki lint retained the six existing medium documentation-coverage advisories without a blocking finding. Current public-source contracts were checked against the working tree and required acceptance evidence.
+
+## [2026-09-11] publish | Pinned public-source contracts to f626e89 after push and matching local HEAD, origin/main and live public main readback. Updated the handoff from pending authorization to published implementation.

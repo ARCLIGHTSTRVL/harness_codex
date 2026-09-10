@@ -56,6 +56,13 @@ dist/validation-public-source/live-install-check.log, which are excluded from re
 The final rebuilt ZIP's SHA-256 sidecar identifies its bytes. These checks establish
 neither publication of this change nor native hook trust or host event delivery.
 
+After explicit publication authorization, implementation commit
+f626e89450af31cad2abbcbfd796e479594d213f was pushed to public main. Local HEAD,
+origin/main and git ls-remote readback matched at that publication checkpoint.
+The committed implementation matched the reviewed diff, and staged secret checks
+passed. The later documentation closeout updates source references and publication
+status; it does not replace any user's installed harness.
+
 The policy now gives an authorized unit complete relevant context, explicit acceptance,
 source-based evidence and checkpoints while excluding unrelated history. Source code
 defines implementation behavior; code-derived explanations belong in wiki and decision

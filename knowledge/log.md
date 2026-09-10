@@ -25,3 +25,5 @@
 ## [2026-09-11] decision | Added public-source-connection: public repository identity belongs in distribution metadata; local content agreement, public revision equality and native host delivery remain separate evidence. Preserved existing fork tracking and documented ZIP migration.
 
 ## [2026-09-11] verify | Public-source code and skill integration passed the required Windows suite and an actual temporary-profile installation plus offline/online setup checks. docs/PACKAGING.md records measured results and local receipt paths; publication and user-profile installation remain separate actions.
+
+## [2026-09-11] publish | After explicit user authorization, published implementation commit f626e89450af31cad2abbcbfd796e479594d213f to public main and verified matching local/tracking/live remote refs. The reviewed diff matched before staging and staged secret checks passed. No personal harness installation was replaced.
