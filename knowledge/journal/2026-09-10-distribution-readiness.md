@@ -44,7 +44,8 @@ recovery for those inputs. It does not evaluate an actual model's distillation q
 Decision: deliver the locally built bundle with receiver instructions and the explicit
 limits below. The rationale is [[portable-distribution]]. No active implementation or
 working plan remains; a recipient's installation is a separate execution in that user's
-environment. Publication and licensing were not part of the completed work.
+environment. At this pre-publication stage on 2026-09-10, publication and licensing were
+not part of the completed work.
 
 ## Version 0.1.2 measured update
 
@@ -111,12 +112,27 @@ the reproduced boundary gaps. Both fixes and their explicit compatibility effect
 accepted, with no remaining material review finding. [[portable-distribution]] owns the
 distribution and preservation rationale.
 
-After this validation, the user authorized an initial private repository on `main`, its
-push, and a personal backport. These actions were not part of the 33-test run, and this
-record does not claim their completion. A resulting Git checkout verifies source
-references at its current `HEAD`; the initial commit cannot self-pin its future SHA.
-The distributed ZIP remains free of Git history and therefore has no commit pin. Public
-visibility and license selection remain outside this authorization.
+## Git publication and public repository closure
+
+On 2026-09-10, the initial source commit
+`8237426b6dfcd8810bd3b2f66d6d23021b21c684` was pushed to `main`. Local `HEAD` and
+`origin/main` matched, and repository visibility was verified as private at that initial
+checkpoint. Staged and tree secret checks passed, while the model-name gate passed with
+exactly two registered historical-attribution suppressions. The user then directed the
+repository to be renamed `harness_codex` and made public. No owner or remote identifier
+is recorded here.
+
+Canonical Git materialization produced 123 distributed source files plus the
+repository-only `githooks/pre-commit`. The hook is excluded from the ZIP and is not
+installed into recipient hook configuration. Its source presence is not evidence of
+native hook trust, host dispatch or model-visible delivery.
+
+The publication source reran all 33 Windows tests in 25.143 seconds. Its 124-entry
+validation ZIP, composed of 123 source entries plus the generated synthetic seed, had
+SHA-256 `f0f51f26c3d7b3718e02afd667aa09fd5a79010c72113b0a0f69fa83621ef943`.
+Documentation closeout changes archive bytes, so the post-closeout ZIP must be rebuilt
+and identified by its own sidecar. Public availability does not select or grant an
+open-source license.
 
 ## Layer B: why the checks matter
 

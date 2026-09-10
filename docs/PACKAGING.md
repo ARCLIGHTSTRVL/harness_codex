@@ -1,7 +1,8 @@
 # Community distribution contract
 
-The owner requested a new project under C:/dev containing a general-purpose distribution.
-The upstream checkout remains unchanged. The package retains workflow skills, native
+During the initial standalone packaging phase on 2026-09-10, the owner requested a new
+project under C:/dev containing a general-purpose distribution, and the upstream checkout
+remained unchanged. The package retains workflow skills, native
 hook adapters, safe installer primitives and project templates. Personal SSH aliases,
 CLI proxy installation, provider alignment, chosen models, account files, runtime state,
 working notes, replay fixtures and Git history are excluded.
@@ -20,9 +21,9 @@ shipping personal operational instructions while retaining the established file 
 behavior. Automatic peer propagation is excluded because users have different machines.
 
 Installation configures hooks but cannot grant trust or prove native host delivery.
-Model/account/permission choices are never imposed. Public hosting and a license are
-separate owner decisions. Native role catalog attestation is still required before any
-user-authorized managed delegation.
+Model/account/permission choices are never imposed. Repository publication does not
+select an open-source license. Native role catalog attestation is still required before
+any user-authorized managed delegation.
 
 ## Version 0.1.2 update
 
@@ -49,22 +50,23 @@ the distribution contract.
 
 ### Source publication boundary
 
-The final 33-test validation ran from a standalone source tree without Git history.
-The user subsequently authorized an initial private repository on `main`, its push,
-and a personal backport. Those external actions do not change the validated package
-contract, and this document does not claim their completion. Public visibility and
-license selection remain separate decisions.
+The final pre-publication 33-test validation ran from a standalone source tree without
+Git history. The repository was subsequently published on `main` at
+`8237426b6dfcd8810bd3b2f66d6d23021b21c684`; local `HEAD` and `origin/main` matched,
+and visibility was verified as private at that initial checkpoint. The user then directed
+the repository to be renamed `harness_codex` and made public. No owner name or remote URL
+is package metadata, and no license is selected by this publication.
 
 After repository initialization, source references are checked against the current
 checkout's `HEAD`. The initial commit cannot embed its own future SHA, and the packaged
 ZIP deliberately omits `.git`, so the ZIP has no commit pin. Its adjacent SHA-256
-sidecar identifies archive bytes instead. Owner names and remote URLs are not source or
-package metadata.
+sidecar identifies archive bytes instead.
 
 Git source includes the optional repository-only `githooks/pre-commit`. It is not
 installed into recipient hook configuration automatically and is excluded from the
-distributed ZIP. ZIP accounting remains 123 source entries plus the generated synthetic
-seed, 124 entries total.
+distributed ZIP. Git source accounting is 123 distributed source files plus that hook,
+124 tracked files total. ZIP accounting remains 123 source entries plus the generated
+synthetic seed, also 124 entries total.
 
 ### Initial version 0.1.2 validation
 
@@ -112,6 +114,17 @@ After this run, only final results and handoff documentation change. The tested
 implementation remains byte-identical, and the delivered ZIP is rebuilt with its own
 SHA-256 sidecar. The local raw logs and hash manifests stay outside the release.
 
+### Initial Git publication verification
+
+After canonical Git newline materialization, staged and tree secret checks passed. The
+model-name gate passed with exactly the two registered historical-attribution
+suppressions. Windows then passed all 33 tests in 25.143 seconds. The resulting
+124-entry publication-validation ZIP had SHA-256
+`f0f51f26c3d7b3718e02afd667aa09fd5a79010c72113b0a0f69fa83621ef943`.
+This artifact predates documentation closeout; the rebuilt post-closeout ZIP receives
+its own checksum. Repository publication and Git-only pre-commit availability do not
+establish recipient hook installation, trust, event delivery or provider identity.
+
 ## Version 0.1.1 historical validation
 
 The 0.1.1 distribution-specific suite has 19 behavioral checks. Windows Python 3.11
@@ -151,12 +164,14 @@ These environment conditions are documented; link rejection has not been weakene
 Correctness: the checks above pass for the exercised installer and package boundaries.
 Purpose fit: the resulting ZIP needs neither the original owner's account nor Git history,
 and contains no SSH aliases, proxy configuration, pinned models, original Git history,
-personal journals or replay fixtures. The original repository remains unchanged.
+personal journals or replay fixtures. The original upstream repository remained unchanged
+during the initial standalone packaging phase described above.
 
 Limits: the complete upstream regression suite is not claimed as revalidated. Native
 host dispatch, trust and model identity are not established by hook command probes.
 No external reviewer was invoked. Package checksums identify content but are unsigned.
-No public repository or license has been selected.
+The repository is public under the display name `harness_codex`; no open-source license
+has been selected.
 
 ## Readiness decisions and recovery boundary
 

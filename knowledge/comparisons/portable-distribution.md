@@ -26,8 +26,9 @@ Keep a separate community source tree with selected skills, policy, hook adapter
 templates and the shared installer. Use an explicit package allowlist and content
 digests rather than requiring the original Git history. Credentials, SSH destinations,
 proxy setup, selected models, personal fragments and installation recovery records
-are outside the distribution. Initial private source publication and personal backport
-were later authorized; public visibility and licensing remain separate decisions.
+are outside the distribution. The implementation source was published at `8237426`;
+the repository was later renamed `harness_codex` and made public. This publication does
+not select an open-source license.
 
 START-HERE.md gives the receiving Codex a concrete install request. Onboarding checks
 prerequisites, previews targets, and applies installation when requested. If PyYAML is
@@ -102,11 +103,12 @@ recipient may have a different machine topology and did not authorize that actio
 
 ## Evidence and remaining limits
 
-The validated source and docs above support these contracts. Validation used a
-standalone tree; an authorized private checkout resolves source references against its
-current `HEAD`, while the ZIP omits Git history and has no commit pin. The initial commit
-cannot self-reference its future SHA, and this record does not claim the external push
-or personal backport completed.
+The validated source and docs above support these contracts. The implementation was
+published at `8237426`, with local `HEAD` and `origin/main` matching at the initial
+publication checkpoint. The public repository is named `harness_codex`; its ZIP omits
+Git history and has no commit pin. The repository-only
+pre-commit hook is excluded from the ZIP and is not installed into recipient hook
+configuration; its presence does not prove native hook trust or runtime delivery.
 The acceptance record [[2026-09-10-distribution-readiness]] separates observed installer
 behavior from trust, host dispatch and semantic quality. The local archived fragment
 records remain unchanged as historical inputs; this page is a later resolved write-back,

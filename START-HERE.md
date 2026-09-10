@@ -2,7 +2,7 @@
 
 Give Codex access to the extracted folder and paste this request:
 
-> Install this dev-setup-codex-community bundle for my current user. Read START-HERE.md.
+> Install this harness_codex bundle for my current user. Read START-HERE.md.
 > Check the environment and show the target files first. Then apply the installation,
 > verify setup-check, and tell me whether I still need to trust hooks or reopen Codex.
 > Preserve my credentials, model choices, unrelated instructions and skills. Do not
@@ -10,7 +10,7 @@ Give Codex access to the extracted folder and paste this request:
 
 한국어 요청문:
 
-> 이 폴더의 dev-setup-codex-community를 현재 사용자용으로 설치해 줘.
+> 이 폴더의 harness_codex를 현재 사용자용으로 설치해 줘.
 > START-HERE.md를 읽고 환경과 변경할 파일을 먼저 보여 준 다음 설치하고 검증해 줘.
 > 내 계정, 모델 설정, 관련 없는 지침과 스킬은 보존해 줘.
 > 훅 신뢰 설정이나 Codex 재시작이 필요하면 알려 주고, 실제 실행 여부는 구분해 줘.

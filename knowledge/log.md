@@ -14,4 +14,10 @@
 
 ## [2026-09-10] verify | Superseded the initial 31-test acceptance after two package/state-boundary corrections. Fresh Windows and macOS terminal logs each report 33 tests passed; the transferred validation ZIP and both-platform rebuilds match. Independent follow-up review accepted the fixes and documented canonical-path compatibility. Retained both generations of local source manifests and raw receipts.
 
-## [2026-09-10] decision | Recorded the later authorization for initial private source publication, push and personal backport without claiming those external actions completed. Checkout references use current HEAD after initialization; ZIP artifacts remain unpinned to Git. Public visibility and license selection stay separate.
+## [2026-09-10] decision | Recorded the later authorization for initial source publication without claiming the external action completed. Checkout references use current HEAD after initialization; ZIP artifacts remain unpinned to Git.
+
+## [2026-09-10] verify | Confirmed initial private publication at `8237426`: local HEAD and origin/main matched and remote visibility was private. Staged/tree secret checks and the model-name gate passed; the publication source passed 33 Windows tests in 25.143 seconds and built a 124-entry validation ZIP with SHA-256 `f0f51f26c3d7b3718e02afd667aa09fd5a79010c72113b0a0f69fa83621ef943`. Repository-hook presence remains separate from installation and runtime delivery.
+
+## [2026-09-10] publish | Recorded the user-directed repository rename to `harness_codex` and public visibility. Compatibility-sensitive package, state and routing names remain unchanged, and public availability does not select a license.
+
+## [2026-09-10] lint | kb-lint passed with 2 content pages and 0 issues after publication closeout.

@@ -1,88 +1,142 @@
-# dev-setup-codex-community
+# harness_codex
 
-A portable Codex workflow bundle: reusable skills, project templates, health checks,
-saved handoffs and native hook adapters. Windows and macOS share one Python installer.
-This distribution removes the original owner's accounts, machine settings and history.
+`harness_codex` is a portable workflow harness for Codex on Windows and macOS. It
+installs reusable skills, project templates, health checks, saved handoff support and
+native hook adapters through one shared Python installer.
 
-Start with [START-HERE.md](START-HERE.md). It includes an English/Korean request to
-give the receiving Codex, an environment check, install preview and recovery commands.
+The harness is built around bounded autonomous units. A unit has a concrete outcome,
+relevant context, acceptance checks and evidence tied to the current source. Code is the
+source of truth for behavior. New prose comments and docstrings are limited to a short,
+stable file-purpose statement. The code-derived `wiki/` explains mechanics, while
+`knowledge/` preserves full decisions, alternatives, evidence and risks. `NEXT.md`
+carries one active handoff.
+
+Delegation is optional and model-neutral. The recipient chooses supported models and
+reasoning efforts from their own host catalog. This repository ships no account data,
+provider configuration, credentials or fixed model assignments.
 
 ## Install
 
-Install Python 3.11+ and Codex first. Git and Git Bash are needed for project freshness
-and shell hook workflows; PyYAML is needed by the linters.
+Prerequisites:
 
-Extract the ZIP to a permanent directory. Then run from that directory:
+- Codex and Python 3.11 or newer
+- Git
+- Git Bash on Windows for shell-based project hook templates
+
+Clone this repository using GitHub's **Code** menu, or choose **Download ZIP** there and
+extract the source into a permanent directory named `harness_codex`. Hooks refer to that
+directory after installation, so do not install from a temporary attachment viewer.
+
+From PowerShell:
 
 ```powershell
+cd C:\path\to\harness_codex
 python scripts\onboard.py
 python scripts\onboard.py --apply
+python scripts\setup-check.py
 ```
+
+From macOS using Bash:
 
 ```bash
+cd /path/to/harness_codex
 python3 scripts/onboard.py
 python3 scripts/onboard.py --apply
+python3 scripts/setup-check.py
 ```
 
-Use a virtual environment if your Python installation requires one. Keep its interpreter
-available while the installed hooks refer to it. An extracted release needs no Git history
-or GitHub account to install. No administrator or sudo access is required.
-Onboarding creates a local `.runtime` environment when PyYAML is missing; it never uses
-global pip. Existing prepared environments can use the platform installers directly.
-Those also support `-Preview` on Windows and `--dry-run` on macOS.
-The supported interpreter must be available as `python`, `python3`, or `py` on PATH.
-For a versioned Homebrew Python, activate its virtual environment or add the formula's
-`libexec/bin` directory to PATH. CODEX_HOME and its ancestors must be real directories;
-linked paths are rejected by the installer. On macOS, resolve `/var` or `/tmp` aliases
-to their `/private/...` paths when using temporary test locations.
+The first onboarding command checks prerequisites and previews the target without
+changing it. `--apply` performs the installation. If PyYAML is unavailable, onboarding
+creates a repository-local `.runtime` virtual environment; it does not modify global
+Python packages. No administrator or sudo access is required.
 
 The installer targets the current user's `~/.codex`, or `CODEX_HOME` when set. It:
 
-- Adds or updates its `DEV-SETUP-CODEX` block in `AGENTS.md`, preserving other policy.
-- Installs the skills listed in [SKILLS.md](SKILLS.md), backs up replacements, and
-  preserves files it has not previously managed.
-- Merges its native hook definitions and records a content hash baseline.
+- Merges its managed policy block into `AGENTS.md` and preserves other instructions.
+- Installs the skills listed in [SKILLS.md](SKILLS.md), backing up replaced managed paths.
+- Merges native hook definitions and records a content-hash baseline for drift checks.
+- Leaves unrelated skills, system skills, SSH configuration, Codex configuration,
+  authentication, providers, permissions and model choices under the user's control.
 
-Existing files at shipped skill paths are backed up and replaced. Unrelated skills,
-system skills, SSH files, `config.toml`, authentication, model choices, provider settings
-and permission settings remain user-owned. This is a per-user distribution; each OS
-account installs separately. Do not run two harness variants against the same CODEX_HOME
-unless you intend their overlapping skill and hook definitions to be replaced.
+Existing files at shipped skill paths are backed up and replaced. Do not install two
+harness variants into the same `CODEX_HOME` unless replacing their overlapping skills
+and hooks is intentional. `CODEX_HOME` and its ancestors must be real directories;
+linked paths are refused. On macOS, resolve `/var` and `/tmp` aliases to `/private/...`
+when supplying temporary test paths.
 
-Review changed hook definitions in Codex's hook trust UI (`/hooks` where available).
-Installation and a clean setup-check establish file/configuration state. They do not
-establish trust or prove the host dispatched an event. Hook API support varies by host.
-Git Bash must be installed on Windows for shell-based project templates.
+Review changed hook definitions in Codex's hook UI (`/hooks` where supported), then open
+a new session if needed. A clean setup check proves installed bytes and configuration.
+It does not prove hook trust, host event delivery or model-visible context.
 
-## Usage
+For an install request that another user can give directly to Codex, see
+[START-HERE.md](START-HERE.md).
 
-Ask Codex to use `dev-setup status`, `dev-setup project-init`, `doctor`, `codebase-wiki`,
-`research-kb`, or another installed skill. No default model is imposed. Select native
-roles from the host's actual catalog and authorize bounded delegation once; reuse those
-choices across sessions unless current instructions or platform constraints override them.
-Project `.codex/agent-routing.json` takes priority over optional user-owned defaults at
-`CODEX_HOME/dev-setup-codex-community/agent-routing.json`. The installer supplies neither
-mapping and preserves the recipient's choices. Managed launches require fresh attestation;
-invalid explicit settings never silently fall back. See
-[docs/NATIVE_AGENT_CONTRACT.md](docs/NATIVE_AGENT_CONTRACT.md) for the routing contract.
-Consultations remain explicit and use your own Codex login.
+## Use the workflow
 
-To enable knowledge capture in a project, preview
-`python scripts/init-knowledge.py /absolute/project/path --hooks`, then add `--apply`.
-Existing project files are preserved. The installed policy requires timely delta capture
-and full reasoning preservation; semantic distillation remains agent-owned. Read
-[docs/KNOWLEDGE-WORKFLOW.md](docs/KNOWLEDGE-WORKFLOW.md) for the complete procedure.
+Ask Codex to use an installed skill such as `dev-setup status`, `dev-setup project-init`,
+`doctor`, `codebase-wiki`, `knowledge-fragment` or `research-kb`. The policy keeps work
+scoped to an accepted unit, verifies behavior against source and runnable checks, and
+records durable reasoning in the appropriate project layer.
 
-Scripts run from this directory; installed skills discover its location from
-`CODEX_HOME/dev-setup-codex-community-state.json`. Keep the directory available.
-To update a ZIP installation, extract a new release and run its installer, then
-setup-check. Do not delete the source folder still referenced by your hooks.
-For a Git clone, `scripts/sync.ps1` or `scripts/sync.sh` updates its existing remote.
-Bootstrap requires an explicit repository URL; no personal repository is configured.
-Rollback and uninstall are preview-first commands in `scripts/install.py`. They use
-local recovery snapshots and refuse files modified after installation. See START-HERE.md.
+To add the knowledge workflow to an existing project, preview first and then apply:
 
-## Development and release
+```text
+python scripts/init-knowledge.py /absolute/path/to/project --hooks
+python scripts/init-knowledge.py /absolute/path/to/project --hooks --apply
+```
+
+The initializer creates only missing files. Existing project files and hook definitions
+are preserved. The agent owns semantic capture and distillation; scripts validate,
+apply and archive selected records. Hooks can preserve a written handoff, but cannot
+reconstruct decisions that were never recorded. See
+[docs/KNOWLEDGE-WORKFLOW.md](docs/KNOWLEDGE-WORKFLOW.md).
+
+Optional native role routing reads project choices first and recipient-owned global
+choices second. Installation creates neither mapping. Managed launches still require a
+fresh catalog and source attestation. See
+[docs/NATIVE_AGENT_CONTRACT.md](docs/NATIVE_AGENT_CONTRACT.md).
+
+## Update
+
+For a clean Git checkout, run the platform sync wrapper from the repository root:
+
+```powershell
+.\scripts\sync.ps1
+python scripts\setup-check.py
+```
+
+```bash
+bash scripts/sync.sh
+python3 scripts/setup-check.py
+```
+
+Sync refuses a dirty working tree, pulls the existing remote and applies the installer.
+Run the shown setup check afterward to verify the installed state. For a ZIP installation,
+extract the newer source into a permanent directory, run its onboarding apply step, and
+confirm `scripts/setup-check.py` before removing an older directory referenced by hooks.
+
+The repository display name is `harness_codex`. Versioned ZIP names, installed state
+files and internal community namespaces retain their existing names so upgrades can
+recognize earlier installations.
+
+## Roll back or uninstall
+
+Recovery is preview-first. Supply the user's home directory, this repository directory
+and the current platform:
+
+```text
+python scripts/install.py rollback --home USER_HOME --repo THIS_FOLDER --platform windows
+```
+
+Use `mac` on macOS and add `--apply` only after reviewing the plan. Replace `rollback`
+with `uninstall` to restore the baseline before all recorded installs. Recovery refuses
+targets changed after installation. Edits made between upgrades can require rolling back
+one version at a time. There is no force-overwrite recovery mode.
+
+Recovery snapshots remain local under `CODEX_HOME` and may contain original file bytes;
+do not publish them. See [START-HERE.md](START-HERE.md) for the full recovery boundary.
+
+## Develop and package
 
 ```text
 python scripts/lint.py
@@ -90,9 +144,9 @@ python -m unittest discover -s tests
 python scripts/package.py
 ```
 
-The last command writes a deterministic ZIP and SHA-256 file under `dist/` using an
-allowlist. It excludes Git history, caches, logs, runtime state and private notes.
-See [docs/PACKAGING.md](docs/PACKAGING.md) for scope and measured validation.
-See [NOTICE.md](NOTICE.md) for attribution and licensing status.
+Packaging writes a deterministic ZIP and SHA-256 sidecar under `dist/`. The allowlist
+excludes Git history, the repository-only pre-commit hook, caches, logs, runtime state,
+account data and private notes. See [docs/PACKAGING.md](docs/PACKAGING.md) for the measured
+validation record and [NOTICE.md](NOTICE.md) for attribution and current license status.
 
 Official skill format reference: https://developers.openai.com/codex/skills
