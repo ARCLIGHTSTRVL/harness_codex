@@ -29,3 +29,5 @@
 ## [2026-09-11] publish | Bound the maintenance contract section to published implementation 6e9235c after local/tracking/live-remote ref equality. No behavioral code changed during documentation closeout.
 
 ## [2026-09-11] refresh | Added explicitly uncommitted 0.1.3 runtime-layout contracts from current source, preserving prior recovery and pip boundaries. Actual UCRT and CPython guards reject linked paths and ambiguous layouts before probing. Final package acceptance remains separate.
+
+## [2026-09-11] close | Pinned 0.1.3 contracts to 47d051e after full-suite and canonical candidate ZIP acceptance. Code/test inputs remain unchanged; NEXT no longer carries an active implementation plan. The final archive gate and publication readback remain separate from native host delivery.

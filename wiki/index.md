@@ -86,7 +86,7 @@ knowledge/comparisons/maintenance-reliability.md.
 Source recovery does not preserve interpreter binaries, establish host trust or prove
 native host event delivery. Packaging and platform acceptance remain in docs/PACKAGING.md.
 
-## MSYS2 runtime layouts (0.1.3)
+## MSYS2 runtime layouts (0.1.3, verified at 47d051e)
 
 - `scripts/runtime.py:_runtime_executable` discovers the runtime's actual layout from
   Scripts/python.exe, bin/python.exe and POSIX bin/python. It rejects multiple
