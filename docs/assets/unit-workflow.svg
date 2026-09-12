@@ -3,21 +3,21 @@
   <desc id="desc">One connected workflow from request through implementation, verification, evidence, documentation, completion, and close. Failed checks loop through findings and revision. Incomplete work records a handoff, then checks freshness on resume and returns to source inspection, re-deriving stale context first.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9da3aa"/>
     </marker>
     <style>
-      .frame { fill: #f8fafc; stroke: #94a3b8; stroke-width: 2; }
-      .node { fill: #ffffff; stroke: #64748b; stroke-width: 2; }
-      .accent { fill: #eef6ff; stroke: #3b82f6; stroke-width: 2; }
-      .decision { fill: #fff8e6; stroke: #b7791f; stroke-width: 2; }
-      .finish { fill: #ecfdf5; stroke: #15803d; stroke-width: 2; }
-      .flow { fill: none; stroke: #475569; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
-      .join { fill: none; stroke: #475569; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-      .junction { fill: #475569; }
-      .heading { font: 700 28px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
-      .label { font: 600 19px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
-      .edge-label { font: 600 17px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #334155; text-anchor: middle; }
-      .return-label { font: 500 17px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; text-anchor: middle; }
+      .frame { fill: #202327; stroke: #484d54; stroke-width: 2; }
+      .node { fill: #2b2f34; stroke: #727880; stroke-width: 2; }
+      .accent { fill: #383d43; stroke: #a0a6ad; stroke-width: 2; }
+      .decision { fill: #33373d; stroke: #8b929a; stroke-width: 2; }
+      .finish { fill: #383d43; stroke: #a0a6ad; stroke-width: 2; }
+      .flow { fill: none; stroke: #9da3aa; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      .join { fill: none; stroke: #9da3aa; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+      .junction { fill: #9da3aa; }
+      .heading { font: 700 28px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #e6e8eb; }
+      .label { font: 600 19px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #e6e8eb; text-anchor: middle; dominant-baseline: middle; }
+      .edge-label { font: 600 17px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #c4c8ce; text-anchor: middle; }
+      .return-label { font: 500 17px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #aeb4bc; text-anchor: middle; }
     </style>
   </defs>
 
