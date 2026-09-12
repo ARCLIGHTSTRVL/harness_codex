@@ -100,43 +100,11 @@ accepted outcome. A failed check becomes a finding and drives another revision.
 
 After checks pass, the agent records evidence and updates `wiki/` for code mechanics or
 `knowledge/` for decisions and risks as needed. It closes a complete unit or leaves one active
-`NEXT.md` or plan handoff. On resume, it checks the saved state against the current commit, paths,
-and dirty files; stale state is re-derived from the source before work continues.
+`NEXT.md` or plan handoff. A pause at any point can leave the same handoff. On resume, it checks
+the saved state against the current commit, paths, and dirty files; stale state is re-derived from
+the source before work continues.
 
-```mermaid
-flowchart LR
-    subgraph UNIT["A unit in practice"]
-        direction LR
-
-        subgraph FRAME["1. Frame"]
-            direction TB
-            R[Request] --> S[Scope + acceptance] --> B[Inspect source + dirty state]
-            B --> D[Design if needed] --> A[Ready]
-        end
-
-        subgraph BUILD["2. Build and verify"]
-            direction TB
-            I[Implement] --> V[Check correctness + purpose fit] --> Q{Pass?}
-            Q -->|Revise| X[Finding + revision] --> I
-            Q -->|Yes| E[Record evidence]
-        end
-
-        subgraph FINISH["3. Finish and resume"]
-            direction TB
-            M[Wiki / knowledge as needed] --> Z[Close or handoff]
-            P[Pause + save] --> F[Freshness on resume] --> N{Fresh?}
-            N -->|Yes| C[Continue unit]
-            N -->|No| Y[Re-derive] --> C
-        end
-
-        FRAME ~~~ BUILD ~~~ FINISH
-    end
-
-    style UNIT fill:transparent,stroke:#8b949e
-    style FRAME fill:transparent,stroke:#8b949e
-    style BUILD fill:transparent,stroke:#8b949e
-    style FINISH fill:transparent,stroke:#8b949e
-```
+![A unit in practice workflow](docs/assets/unit-workflow.svg)
 
 ## What the harness includes
 

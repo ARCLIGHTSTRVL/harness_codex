@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="730" viewBox="0 0 1200 730" role="img" aria-labelledby="title desc">
+  <title id="title">A unit in practice</title>
+  <desc id="desc">One connected workflow from request through implementation, verification, evidence, documentation, completion, and close. Failed checks loop through findings and revision. Incomplete work records a handoff, then checks freshness on resume and returns to source inspection, re-deriving stale context first.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .frame { fill: #f8fafc; stroke: #94a3b8; stroke-width: 2; }
+      .node { fill: #ffffff; stroke: #64748b; stroke-width: 2; }
+      .accent { fill: #eef6ff; stroke: #3b82f6; stroke-width: 2; }
+      .decision { fill: #fff8e6; stroke: #b7791f; stroke-width: 2; }
+      .finish { fill: #ecfdf5; stroke: #15803d; stroke-width: 2; }
+      .flow { fill: none; stroke: #475569; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      .join { fill: none; stroke: #475569; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+      .junction { fill: #475569; }
+      .heading { font: 700 28px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .label { font: 600 19px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+      .edge-label { font: 600 17px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #334155; text-anchor: middle; }
+      .return-label { font: 500 17px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect class="frame" x="20" y="20" width="1160" height="690" rx="20"/>
+  <text class="heading" x="50" y="62">A unit in practice</text>
+
+  <path class="flow" d="M 190 144 H 230"/>
+  <path class="flow" d="M 420 144 H 470"/>
+  <path class="flow" d="M 680 144 H 730"/>
+  <path class="flow" d="M 900 144 H 955"/>
+  <path class="flow" d="M 1042.5 178 V 265"/>
+  <path class="flow" d="M 910 300 H 850"/>
+  <path class="flow" d="M 730 300 H 670"/>
+  <path class="flow" d="M 475 300 H 425"/>
+  <path class="flow" d="M 235 300 H 190"/>
+  <path class="flow" d="M 115 345 V 405"/>
+
+  <path class="flow" d="M 790 345 V 395"/>
+  <path class="flow" d="M 885 425 H 1140 V 144 H 1130"/>
+
+  <path class="flow" d="M 40 300 H 32 V 500 H 350 V 535"/>
+  <path class="flow" d="M 450 568 H 500"/>
+  <path class="flow" d="M 700 568 H 760"/>
+  <path class="flow" d="M 900 568 H 950"/>
+  <path class="join" d="M 1125 568 H 1165 V 82 H 575"/>
+  <path class="flow" d="M 575 82 V 110"/>
+  <path class="join" d="M 830 610 V 670 H 1165 V 568"/>
+  <circle class="junction" cx="1165" cy="568" r="5"/>
+
+  <rect class="accent" x="50" y="110" width="140" height="68" rx="12"/>
+  <text class="label" x="120" y="145">Request</text>
+
+  <rect class="node" x="230" y="110" width="190" height="68" rx="12"/>
+  <text class="label" x="325" y="134">
+    <tspan x="325" dy="0">Scope +</tspan>
+    <tspan x="325" dy="24">acceptance</tspan>
+  </text>
+
+  <rect class="node" x="470" y="110" width="210" height="68" rx="12"/>
+  <text class="label" x="575" y="134">
+    <tspan x="575" dy="0">Inspect source +</tspan>
+    <tspan x="575" dy="24">dirty state</tspan>
+  </text>
+
+  <rect class="node" x="730" y="110" width="170" height="68" rx="12"/>
+  <text class="label" x="815" y="134">
+    <tspan x="815" dy="0">Design</tspan>
+    <tspan x="815" dy="24">if needed</tspan>
+  </text>
+
+  <rect class="node" x="955" y="110" width="175" height="68" rx="12"/>
+  <text class="label" x="1042.5" y="145">Implement</text>
+
+  <rect class="node" x="910" y="265" width="220" height="70" rx="12"/>
+  <text class="label" x="1020" y="289">
+    <tspan x="1020" dy="0">Correctness +</tspan>
+    <tspan x="1020" dy="24">purpose checks</tspan>
+  </text>
+
+  <polygon class="decision" points="790,255 850,300 790,345 730,300"/>
+  <text class="label" x="790" y="300">Pass?</text>
+
+  <rect class="node" x="475" y="267" width="195" height="66" rx="12"/>
+  <text class="label" x="572.5" y="300">Record evidence</text>
+
+  <rect class="node" x="235" y="267" width="190" height="66" rx="12"/>
+  <text class="label" x="330" y="288">
+    <tspan x="330" dy="0">Wiki / knowledge</tspan>
+    <tspan x="330" dy="24">as needed</tspan>
+  </text>
+
+  <polygon class="decision" points="115,255 190,300 115,345 40,300"/>
+  <text class="label" x="115" y="289">
+    <tspan x="115" dy="0">Unit</tspan>
+    <tspan x="115" dy="24">complete?</tspan>
+  </text>
+
+  <rect class="finish" x="55" y="405" width="120" height="60" rx="30"/>
+  <text class="label" x="115" y="436">Close</text>
+
+  <rect class="node" x="695" y="395" width="190" height="60" rx="12"/>
+  <text class="label" x="790" y="416">
+    <tspan x="790" dy="0">Finding +</tspan>
+    <tspan x="790" dy="23">revision</tspan>
+  </text>
+
+  <rect class="node" x="250" y="535" width="200" height="66" rx="12"/>
+  <text class="label" x="350" y="556">
+    <tspan x="350" dy="0">NEXT / plan</tspan>
+    <tspan x="350" dy="24">handoff</tspan>
+  </text>
+
+  <rect class="node" x="500" y="535" width="200" height="66" rx="12"/>
+  <text class="label" x="600" y="556">
+    <tspan x="600" dy="0">Resume: inspect</tspan>
+    <tspan x="600" dy="24">source + dirty state</tspan>
+  </text>
+
+  <polygon class="decision" points="830,526 900,568 830,610 760,568"/>
+  <text class="label" x="830" y="568">Fresh?</text>
+
+  <rect class="node" x="950" y="535" width="175" height="66" rx="12"/>
+  <text class="label" x="1037.5" y="568">Re-derive</text>
+
+  <text class="edge-label" x="700" y="290">Yes</text>
+  <text class="edge-label" x="835" y="374">Revise</text>
+  <text class="edge-label" x="136" y="379">Yes</text>
+  <text class="edge-label" x="142" y="490">Incomplete / pause</text>
+  <text class="edge-label" x="925" y="557">No</text>
+  <text class="edge-label" x="853" y="650">Yes</text>
+  <text class="return-label" x="850" y="71">Return to current source inspection</text>
+</svg>
