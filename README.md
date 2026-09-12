@@ -90,22 +90,53 @@ the parent agent, which remains responsible for source inspection, integration, 
 
 ## A unit in practice
 
-The path is iterative rather than a mandatory phase count. The agent writes durable artifacts as needed.
-Scope includes acceptance criteria; findings include evidence and decisions. Documentation
-updates go to `wiki/` or `knowledge/`, and unfinished work leaves a `NEXT.md` or plan handoff.
-When a later session resumes, it rechecks saved state against the current source.
+The path is iterative rather than a mandatory phase count. Each unit turns the request into a
+scoped outcome with observable acceptance criteria. Before editing, the agent inspects the
+current source and dirty state, then designs only when the work has more than one reasonable
+approach or changes a durable contract. Verification asks two separate questions: is the
+implementation correct, and does it satisfy the accepted purpose?
+
+Failed checks become findings that drive another revision. After checks pass, the agent routes
+code mechanics to `wiki/` and decisions or risks to `knowledge/` as needed. The unit closes when
+acceptance is complete; otherwise it leaves one active `NEXT.md` or plan handoff. A resumed
+session checks that saved state against the current commit, paths, and dirty files before using it.
 
 ```mermaid
 flowchart TD
-    R[Request] --> S[Define scope]
-    S --> D[Inspect and design]
-    D --> I[Implement]
-    I --> V[Verify]
-    V -->|Revise| I
-    V -->|Pass| E[Record findings]
-    E --> A[Update docs]
-    A --> H[Close or handoff]
-    H -. Resume .-> D
+    subgraph FRAME["Frame the unit"]
+        R[Request] --> S[Scope + acceptance]
+        S --> B[Inspect source + dirty state]
+        B --> G{Design needed?}
+        G -->|Yes| D[Choose design]
+    end
+
+    subgraph PROVE["Change and verify"]
+        G -->|No| I[Implement]
+        D --> I
+        I --> C[Correctness vs source]
+        C --> P[Purpose fit vs acceptance]
+        P --> V{Both pass?}
+        V -->|No| F[Record finding]
+        F --> X[Revise]
+        X --> I
+        V -->|Yes| E[Record evidence]
+    end
+
+    subgraph FINISH["Preserve and finish"]
+        E --> M[Update docs as needed]
+        M -. Mechanics .-> W[Wiki mechanics]
+        M -. Decisions / risks .-> K[Knowledge rationale]
+        M --> Z{Unit complete?}
+        W --> Z
+        K --> Z
+        Z -->|Yes| Q[Close unit]
+        Z -->|No| H[Save NEXT / plan]
+        I -. Pause .-> H
+        H -. Resume .-> N{Saved state fresh?}
+        N -->|Yes| B
+        N -->|No| Y[Re-derive from source]
+        Y --> B
+    end
 ```
 
 ## What the harness includes
