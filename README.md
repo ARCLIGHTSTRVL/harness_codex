@@ -92,51 +92,50 @@ the parent agent, which remains responsible for source inspection, integration, 
 
 The path is iterative rather than a mandatory phase count. Each unit turns the request into a
 scoped outcome with observable acceptance criteria. Before editing, the agent inspects the
-current source and dirty state, then designs only when the work has more than one reasonable
-approach or changes a durable contract. Verification asks two separate questions: is the
-implementation correct, and does it satisfy the accepted purpose?
+current source and dirty state.
 
-Failed checks become findings that drive another revision. After checks pass, the agent routes
-code mechanics to `wiki/` and decisions or risks to `knowledge/` as needed. The unit closes when
-acceptance is complete; otherwise it leaves one active `NEXT.md` or plan handoff. A resumed
-session checks that saved state against the current commit, paths, and dirty files before using it.
+Design is optional: it is used when the work has more than one reasonable approach or changes a
+durable contract. Verification checks correctness against the source and purpose fit against the
+accepted outcome. A failed check becomes a finding and drives another revision.
+
+After checks pass, the agent records evidence and updates `wiki/` for code mechanics or
+`knowledge/` for decisions and risks as needed. It closes a complete unit or leaves one active
+`NEXT.md` or plan handoff. On resume, it checks the saved state against the current commit, paths,
+and dirty files; stale state is re-derived from the source before work continues.
 
 ```mermaid
-flowchart TD
-    subgraph FRAME["Frame the unit"]
-        R[Request] --> S[Scope + acceptance]
-        S --> B[Inspect source + dirty state]
-        B --> G{Design needed?}
-        G -->|Yes| D[Choose design]
+flowchart LR
+    subgraph UNIT["A unit in practice"]
+        direction LR
+
+        subgraph FRAME["1. Frame"]
+            direction TB
+            R[Request] --> S[Scope + acceptance] --> B[Inspect source + dirty state]
+            B --> D[Design if needed] --> A[Ready]
+        end
+
+        subgraph BUILD["2. Build and verify"]
+            direction TB
+            I[Implement] --> V[Check correctness + purpose fit] --> Q{Pass?}
+            Q -->|Revise| X[Finding + revision] --> I
+            Q -->|Yes| E[Record evidence]
+        end
+
+        subgraph FINISH["3. Finish and resume"]
+            direction TB
+            M[Wiki / knowledge as needed] --> Z[Close or handoff]
+            P[Pause + save] --> F[Freshness on resume] --> N{Fresh?}
+            N -->|Yes| C[Continue unit]
+            N -->|No| Y[Re-derive] --> C
+        end
+
+        FRAME ~~~ BUILD ~~~ FINISH
     end
 
-    subgraph PROVE["Change and verify"]
-        G -->|No| I[Implement]
-        D --> I
-        I --> C[Correctness vs source]
-        C --> P[Purpose fit vs acceptance]
-        P --> V{Both pass?}
-        V -->|No| F[Record finding]
-        F --> X[Revise]
-        X --> I
-        V -->|Yes| E[Record evidence]
-    end
-
-    subgraph FINISH["Preserve and finish"]
-        E --> M[Update docs as needed]
-        M -. Mechanics .-> W[Wiki mechanics]
-        M -. Decisions / risks .-> K[Knowledge rationale]
-        M --> Z{Unit complete?}
-        W --> Z
-        K --> Z
-        Z -->|Yes| Q[Close unit]
-        Z -->|No| H[Save NEXT / plan]
-        I -. Pause .-> H
-        H -. Resume .-> N{Saved state fresh?}
-        N -->|Yes| B
-        N -->|No| Y[Re-derive from source]
-        Y --> B
-    end
+    style UNIT fill:transparent,stroke:#8b949e
+    style FRAME fill:transparent,stroke:#8b949e
+    style BUILD fill:transparent,stroke:#8b949e
+    style FINISH fill:transparent,stroke:#8b949e
 ```
 
 ## What the harness includes
